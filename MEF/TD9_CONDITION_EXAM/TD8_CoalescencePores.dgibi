@@ -1,0 +1,301 @@
+***********************************************************************
+* DEBUT DU FICHIER CASTEM
+*
+***********************************************************************
+*  POLYTECH'MONTPELLIER 
+*  EXAMEN DE RATTRAPAGE MEF 
+*  ANNEE 2007-2008
+***********************************************************************
+*
+* question 1 (2 pts)
+* ----------
+*
+* Indiquez les conditions qui font que ce problème puisse être
+* modélisé par 1/4 de sa structure seulement.
+* 
+*  -> réponse :
+*
+*
+*
+*
+* question 2 (1 pts)
+* ----------
+*
+* Indiquez dans quelle unité doit être l'intensité du déplacement U
+* pour que les efforts obtenus à l'issu du calcul soient en Newton. 
+*
+*  -> réponse :
+*
+* question 3 (1 pts)
+* ----------
+* Que signifie la ligne après le repère >>>FLAG1 ?
+* 
+*  -> réponse :
+*
+*
+*
+* question 4 (1.5 pts)
+* ----------
+* 
+* Que signifie la ligne après le repère >>>FLAG2 ?
+* 
+*  -> réponse :
+*
+*
+*
+* question 5 (1.5 pts)
+* ----------
+* 
+* Que signifie la ligne après le repère >>>FLAG3 ?
+* 
+*  -> réponse :
+*
+*
+* question 6 (3 pts)
+* ----------
+* 
+* Après le repère >>>FLAG4, expliquez la présence d'une valeur
+* négative pour le nombre de point et le rôle des mots clés
+* DINI ET DFIN. Expliquez l'intérêt de cette ligne pour le problème
+* mécanique considéré.
+* 
+*  -> réponse :
+*
+*
+*
+*
+*
+*
+*
+* question 7 (1 pts)
+* ----------
+* 
+* Expliquez le rôle de la ligne située après le repère >>>FLAG5.
+*
+* -> réponse :
+*
+*
+*
+* question 8 (3 pts)
+* ----------
+* 
+* Expliquez le rôle des conditions aux limites rassemblées dans
+* CLSYM après le repère >>>FLAG6.
+*
+* -> réponse :
+*
+*
+*
+* question 9 (6 pts)
+* ----------
+* 
+* On s'intéresse dans cette question aux conditions qui favorisent
+* la "coalescence" des deux pores. Pour parler simplement, 
+* la "coalescence" est le fait que la déformation de chaque pore
+* soit accentuée par la présence d'un pore voisin jusqu'à rompre
+* le lien de matière entre les deux pores (cette dernière étape
+* n'est pas modélisée ici). Pour un matériau plastique parfait,
+* on considèrera ici que ce lien de matière sera rompu s'il existe
+* un chemin entre les deux pores où la limite d'élasticité du matériau
+* est dépassée en tout point (au sens de la contrainte équivalente de 
+* von Mises).
+* En jouant sur les paramètres A (position des pores),
+* R (rayon des pores) et ALPHA (taux de biaxialité), et en observant 
+* la distribution des contraintes de von Mises dans la structure 
+* en fin de chargement, ainsi qu'en s'intéressant à la variation
+* relative de porosité, vous formulerez les commentaires mécaniques
+* qui vous semblent appropriés quant aux conditions qui favorisent
+* cette coalescence. 
+*
+* -> réponse :
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+************************************************************************
+*
+* DEBUT DU FICHIER CASTEM
+*
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+* 
+************************************************************************
+
+TITR 'COALESCENCE DE PORES' ;
+* >>>FLAG1
+OPTI DIME 2 ELEM QUA8;
+OPTI ECHO 0;
+
+
+***************************************
+* PARAMETRISATION, DONNEES
+***************************************
+
+* DIMENSIONS (en mètres)
+* ----------------------
+H        = 1.0    ;  COMM Cote du carre ;
+R        = (H/10) ;  COMM Rayon des pores ;
+A        = (H/4)  ;  COMM Position des pores ;
+PI       = 3.14159;  COMM Nombre Pi ;
+
+
+* PARAMETRES DE MAILLAGE
+* ----------------------
+NC1      =  15;   COMM Nbno sur le cote du carre ;
+RAFIN    =  3 ;
+
+* ELASTICITE
+* ----------
+MODYOUNG = 2.E11; COMM en Pascal;
+COEFPOIS = 0.3;
+
+* PLASTICITE
+* ----------
+SIG1  = 80.E06;
+
+* CHARGEMENT
+* ----------
+ALPHA = 0.0;   COMM Ponderation bi-axialite;
+U    = H/70;   COMM Intensite du deplacement;
+
+***************************************
+* GEOMETRIE ET MAILLAGE
+***************************************
+
+P1 = 0. 0. ;
+P2 = (A-R) 0.;
+P3 = (A-(R*(COS(45)))) (R*(SIN(45)));
+P4 = A R;
+P5 = A H;
+P6 = (A+(R*(COS(45)))) (R*(SIN(45)));;
+P7 = 0. H;
+P8 = H H;
+P9 = (A+R) 0.;
+P10 = H 0.;
+
+* >>>FLAG2
+L1 = P1 D NC1 P2 ;
+* >>>FLAG3
+L2 = C NC1 P2 (P2 PLUS (R 0.)) P3 ; 
+L3 = P3 D NC1 P7;
+L4 = C NC1 P4 (P2 PLUS (R 0.)) P3 ; 
+L5 = P5 D NC1 P4;
+L6 = P7 D NC1 P5;
+* >>>FLAG4
+L7 = P7 D (-1*NC1) P1 DINI (RAFIN*H/NC1) DFIN (H/NC1/RAFIN); 
+
+SURF1 = DALL L1 L2 L3 L7;
+SURF2 = DALL L3 L6 L5 L4;
+
+
+L8 = P6 D NC1 P8;
+L9 = P8 D NC1 P5;
+L10 = C NC1 P4 (P2 PLUS (R 0.)) P6 ;
+L11 = P10 D NC1 P9 ;
+L12 = P8 D NC1 P10;
+L13 = C NC1 P9 (P2 PLUS (R 0.)) P6 ; 
+
+SURF3 = DALL L5 L10 L8 L9;
+SURF4 = DALL L8 L12 L11 L13;
+
+SURFT = SURF1 ET SURF2 ET SURF3 ET SURF4;
+* >>>FLAG5
+ELIM SURFT 0.0000001;
+
+
+TRAC QUAL SURFT ;
+
+
+* MODELE ET MATERIAU
+***************************************
+MOD1 = MODE SURFT MECANIQUE ELASTIQUE ISOTROPE PLASTIQUE PARFAIT ;
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS  'SIGY' SIG1 ;
+
+* CONDITIONS AUX LIMITES
+************************
+GEO1 = SURFT POIN DROI P1 P2 1.E-5;
+
+CL1 = BLOQ UX L7;
+CL2 = BLOQ UY GEO1;
+* >>>FLAG6
+CLSYM = CL1 ET CL2;
+
+
+GEO2 = SURFT POIN DROI P7 P5 1.E-5;
+
+NSUB = 10;
+LIST1= PROG 0. PAS (1./NSUB) 1.;
+LISTU= PROG U PAS 0. NPAS NSUB ;
+
+CL4 = BLOQ UY GEO2 ;
+CL5 = BLOQ UX L12 ;
+CLMORE = CL4 ET CL5;
+CHA1  = DEPI CL5 (ALPHA*U) ;
+CHA2  = DEPI CL4 ((1-ALPHA)*U) ;
+EVOL1 = EVOL MANU TEMPS LIST1 DEPLACEMENT LISTU;
+CHAR1 = CHAR MECA CHA1 EVOL1;
+CHAR2 = CHAR MECA CHA2 EVOL1;
+CHART = CHAR1 ET CHAR2;
+
+
+CLT = CLSYM ET CLMORE;
+
+
+* RESOLUTION
+* -------------------
+TAB1=TABLE;
+TAB1.'BLOCAGES_MECANIQUES'=CLT;
+TAB1.'PRECISION'=1.e-3;
+TAB1.'MODELE'=MOD1;
+TAB1.'CHARGEMENT'=(CHART);
+TAB1.'CARACTERISTIQUES'=MAT1;
+TAB1.'TEMPS_CALCULES'=LIST1;
+TAB1.'TEMPS_SAUVES' = LIST1;
+TAB1.'GRANDS_DEPLACEMENTS'=FAUX;
+TAB1.'GRANDES_ROTATIONS'=FAUX;
+TAB1.'GRANDES_DEFORMATIONS'=FAUX;
+TAB1.'CONVERGENCE_FORCEE' = FAUX;
+PASAPAS TAB1;
+
+
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION
+* -------------
+
+SS = TAB1.CONTRAINTES.NSUB;
+SSVV = VMIS MOD1 SS;
+* visualisation de la contrainte de von Mises au dernier pas de
+* chargement
+DEF1 = DEFO SURFT (TAB1.'DEPLACEMENTS'.(TAB1.PAS)) 1.E1 blan;
+TRAC MOD1 DEF1 SSVV;
+
+
+* VARIATION RELATIVE DE POROSITE
+* ------------------------------
+
+VOLFIN = MESU (SURFT PLUS (TAB1.'DEPLACEMENTS'.(TAB1.PAS)));
+FINI = (PI*R*R/2)/(H*H);
+MESS 'POROSITE INITIALE (%)              = ' (FINI*100);
+FFIN = ((H+(ALPHA*U))*(H+((1-ALPHA)*U)))-VOLFIN;
+MESS 'POROSITE FINALE   (%)              = ' (FFIN*100);
+FVAR = ((FFIN-FINI)/FINI)*100;
+MESS 'COEFFICIENT BIAXIALITE             = ' ALPHA;
+MESS 'VARIATION RELATIVE DE POROSITE (%) =' (FVAR);
+
+
+FIN ;
+***********************************************************************
+* FIN DU FICHIER CASTEM
+***********************************************************************

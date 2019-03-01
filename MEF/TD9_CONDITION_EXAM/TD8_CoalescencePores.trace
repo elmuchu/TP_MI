@@ -1,0 +1,2395 @@
+*********************************************************************** 
+* DEBUT DU FICHIER CASTEM                                               
+*                                                                       
+*********************************************************************** 
+*  POLYTECH'MONTPELLIER                                                 
+*  EXAMEN DE RATTRAPAGE MEF                                             
+*  ANNEE 2007-2008                                                      
+*********************************************************************** 
+*                                                                       
+* question 1 (2 pts)                                                    
+* ----------                                                            
+*                                                                       
+* Indiquez les conditions qui font que ce problème puisse être          
+* modélisé par 1/4 de sa structure seulement.                           
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+* question 2 (1 pts)                                                    
+* ----------                                                            
+*                                                                       
+* Indiquez dans quelle unité doit être l'intensité du déplacement U     
+* pour que les efforts obtenus à l'issu du calcul soient en Newton.     
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+* question 3 (1 pts)                                                    
+* ----------                                                            
+* Que signifie la ligne après le repère >>>FLAG1 ?                      
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+*                                                                       
+*                                                                       
+* question 4 (1.5 pts)                                                  
+* ----------                                                            
+*                                                                       
+* Que signifie la ligne après le repère >>>FLAG2 ?                      
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+*                                                                       
+*                                                                       
+* question 5 (1.5 pts)                                                  
+* ----------                                                            
+*                                                                       
+* Que signifie la ligne après le repère >>>FLAG3 ?                      
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+*                                                                       
+* question 6 (3 pts)                                                    
+* ----------                                                            
+*                                                                       
+* Après le repère >>>FLAG4, expliquez la présence d'une valeur          
+* négative pour le nombre de point et le rôle des mots clés             
+* DINI ET DFIN. Expliquez l'intérêt de cette ligne pour le problème     
+* mécanique considéré.                                                  
+*                                                                       
+*  -> réponse :                                                         
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+* question 7 (1 pts)                                                    
+* ----------                                                            
+*                                                                       
+* Expliquez le rôle de la ligne située après le repère >>>FLAG5.        
+*                                                                       
+* -> réponse :                                                          
+*                                                                       
+*                                                                       
+*                                                                       
+* question 8 (3 pts)                                                    
+* ----------                                                            
+*                                                                       
+* Expliquez le rôle des conditions aux limites rassemblées dans         
+* CLSYM après le repère >>>FLAG6.                                       
+*                                                                       
+* -> réponse :                                                          
+*                                                                       
+*                                                                       
+*                                                                       
+* question 9 (6 pts)                                                    
+* ----------                                                            
+*                                                                       
+* On s'intéresse dans cette question aux conditions qui favorisent      
+* la "coalescence" des deux pores. Pour parler simplement,              
+* la "coalescence" est le fait que la déformation de chaque pore        
+* soit accentuée par la présence d'un pore voisin jusqu'à rompre        
+* le lien de matière entre les deux pores (cette dernière étape         
+* n'est pas modélisée ici). Pour un matériau plastique parfait,         
+* on considèrera ici que ce lien de matière sera rompu s'il existe      
+* un chemin entre les deux pores où la limite d'élasticité du matériau  
+* est dépassée en tout point (au sens de la contrainte équivalente de   
+* von Mises).                                                           
+* En jouant sur les paramètres A (position des pores),                  
+* R (rayon des pores) et ALPHA (taux de biaxialité), et en observant    
+* la distribution des contraintes de von Mises dans la structure        
+* en fin de chargement, ainsi qu'en s'intéressant à la variation        
+* relative de porosité, vous formulerez les commentaires mécaniques     
+* qui vous semblent appropriés quant aux conditions qui favorisent      
+* cette coalescence.                                                    
+*                                                                       
+* -> réponse :                                                          
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+*                                                                       
+************************************************************************
+*                                                                       
+* DEBUT DU FICHIER CASTEM                                               
+*                                                                       
+*        1         2         3         4         5         6         7  
+*23456789012345678901234567890123456789012345678901234567890123456789012
+*                                                                       
+************************************************************************
+                                                                        
+TITR 'COALESCENCE DE PORES' ;                                           
+* >>>FLAG1                                                              
+OPTI DIME 2 ELEM QUA8;                                                  
+OPTI ECHO 0;                                                            
+                                                                        
+                                                                        
+***************************************                                 
+* PARAMETRISATION, DONNEES                                              
+***************************************                                 
+                                                                        
+* DIMENSIONS (en mètres)                                                
+* ----------------------                                                
+H        = 1.0    ;  COMM Cote du carre ;                               
+R        = (H/10) ;  COMM Rayon des pores ;                             
+A        = (H/4)  ;  COMM Position des pores ;                          
+PI       = 3.14159;  COMM Nombre Pi ;                                   
+                                                                        
+                                                                        
+* PARAMETRES DE MAILLAGE                                                
+* ----------------------                                                
+NC1      =  15;   COMM Nbno sur le cote du carre ;                      
+RAFIN    =  3 ;                                                         
+                                                                        
+* ELASTICITE                                                            
+* ----------                                                            
+MODYOUNG = 2.E11; COMM en Pascal;                                       
+COEFPOIS = 0.3;                                                         
+                                                                        
+* PLASTICITE                                                            
+* ----------                                                            
+SIG1  = 80.E06;                                                         
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+ALPHA = 0.0;   COMM Ponderation bi-axialite;                            
+U    = H/70;   COMM Intensite du deplacement;                           
+                                                                        
+***************************************                                 
+* GEOMETRIE ET MAILLAGE                                                 
+***************************************                                 
+                                                                        
+P1 = 0. 0. ;                                                            
+P2 = (A-R) 0.;                                                          
+P3 = (A-(R*(COS(45)))) (R*(SIN(45)));                                   
+P4 = A R;                                                               
+P5 = A H;                                                               
+P6 = (A+(R*(COS(45)))) (R*(SIN(45)));;                                  
+P7 = 0. H;                                                              
+P8 = H H;                                                               
+P9 = (A+R) 0.;                                                          
+P10 = H 0.;                                                             
+                                                                        
+* >>>FLAG2                                                              
+L1 = P1 D NC1 P2 ;                                                      
+* >>>FLAG3                                                              
+L2 = C NC1 P2 (P2 PLUS (R 0.)) P3 ;                                     
+L3 = P3 D NC1 P7;                                                       
+L4 = C NC1 P4 (P2 PLUS (R 0.)) P3 ;                                     
+L5 = P5 D NC1 P4;                                                       
+L6 = P7 D NC1 P5;                                                       
+* >>>FLAG4                                                              
+L7 = P7 D (-1*NC1) P1 DINI (RAFIN*H/NC1) DFIN (H/NC1/RAFIN);            
+                                                                        
+SURF1 = DALL L1 L2 L3 L7;                                               
+SURF2 = DALL L3 L6 L5 L4;                                               
+                                                                        
+                                                                        
+L8 = P6 D NC1 P8;                                                       
+L9 = P8 D NC1 P5;                                                       
+L10 = C NC1 P4 (P2 PLUS (R 0.)) P6 ;                                    
+L11 = P10 D NC1 P9 ;                                                    
+L12 = P8 D NC1 P10;                                                     
+L13 = C NC1 P9 (P2 PLUS (R 0.)) P6 ;                                    
+                                                                        
+SURF3 = DALL L5 L10 L8 L9;                                              
+SURF4 = DALL L8 L12 L11 L13;                                            
+                                                                        
+SURFT = SURF1 ET SURF2 ET SURF3 ET SURF4;                               
+* >>>FLAG5                                                              
+ELIM SURFT 0.0000001;                                                   
+                                                                        
+                                                                        
+TRAC QUAL SURFT ;                                                       
+                                                                        
+                                                                        
+* MODELE ET MATERIAU                                                    
+***************************************                                 
+MOD1 = MODE SURFT MECANIQUE ELASTIQUE ISOTROPE PLASTIQUE PARFAIT ;      
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS  'SIGY' SIG1 ;               
+                                                                        
+* CONDITIONS AUX LIMITES                                                
+************************                                                
+GEO1 = SURFT POIN DROI P1 P2 1.E-5;                                     
+                                                                        
+CL1 = BLOQ UX L7;                                                       
+CL2 = BLOQ UY GEO1;                                                     
+* >>>FLAG6                                                              
+CLSYM = CL1 ET CL2;                                                     
+                                                                        
+                                                                        
+GEO2 = SURFT POIN DROI P7 P5 1.E-5;                                     
+                                                                        
+NSUB = 10;                                                              
+LIST1= PROG 0. PAS (1./NSUB) 1.;                                        
+LISTU= PROG U PAS 0. NPAS NSUB ;                                        
+                                                                        
+CL4 = BLOQ UY GEO2 ;                                                    
+CL5 = BLOQ UX L12 ;                                                     
+CLMORE = CL4 ET CL5;                                                    
+CHA1  = DEPI CL5 (ALPHA*U) ;                                            
+CHA2  = DEPI CL4 ((1-ALPHA)*U) ;                                        
+EVOL1 = EVOL MANU TEMPS LIST1 DEPLACEMENT LISTU;                        
+CHAR1 = CHAR MECA CHA1 EVOL1;                                           
+CHAR2 = CHAR MECA CHA2 EVOL1;                                           
+CHART = CHAR1 ET CHAR2;                                                 
+                                                                        
+                                                                        
+CLT = CLSYM ET CLMORE;                                                  
+                                                                        
+                                                                        
+* RESOLUTION                                                            
+* -------------------                                                   
+TAB1=TABLE;                                                             
+TAB1.'BLOCAGES_MECANIQUES'=CLT;                                         
+TAB1.'PRECISION'=1.e-3;                                                 
+TAB1.'MODELE'=MOD1;                                                     
+TAB1.'CHARGEMENT'=(CHART);                                              
+TAB1.'CARACTERISTIQUES'=MAT1;                                           
+TAB1.'TEMPS_CALCULES'=LIST1;                                            
+TAB1.'TEMPS_SAUVES' = LIST1;                                            
+TAB1.'GRANDS_DEPLACEMENTS'=FAUX;                                        
+TAB1.'GRANDES_ROTATIONS'=FAUX;                                          
+TAB1.'GRANDES_DEFORMATIONS'=FAUX;                                       
+TAB1.'CONVERGENCE_FORCEE' = FAUX;                                       
+PASAPAS TAB1;                                                           
+                                                                        
+'DEBPROC' PASAPAS  PRECED*'TABLE';                                      
+'SAUTER' 1 'LIGNE';                                                     
+'MESS'                                                                  
+'------------------ DEBUT DE LA PROCEDURE PASAPAS --------------------';
+                                                                        
+                                                                        
+PAS_DEFA PRECED ;                                                       
+PAS_INIT PRECED ;                                                       
+WTAB  = PRECED.'WTABLE';                                                
+conti = PRECED.'CONTINUATION';                                          
+estim = PRECED.'ESTIMATION';                                            
+GE0_DEB=WTAB.'FOR0';                                                    
+'SI'( WTAB.'GRANDS_DEPLACEMENTS' 'OU'  WTAB.'FEFP_FORMULATION');        
+  'SI' ( 'EXIS' conti 'DEPLACEMENTS');                                  
+    Ge0_deb= 'FORME' conti . 'DEPLACEMENTS';                            
+  'FINSI';                                                              
+'FINSI';                                                                
+'FORM' WTAB.'FOR0';                                                     
+                                                                        
+'SI' ('EGA' WTAB.'DT' ('MOT' 'INCONNU'));                               
+   DELTAN = 0.D0 ;                                                      
+   WTAB.'DT' = DELTAN ;                                                 
+'SINON';                                                                
+   DELTAN= WTAB.'DT';                                                   
+'FINSI';                                                                
+                                                                        
+ETAT1 = PAS_ETAT PRECED WTAB.'TEMPS0'       ;                           
+                                                                        
+'SI' ('EGA' WTAB.'ETAT0' ('MOT' 'INCONNU')) ;                           
+   WTAB.'ETAT0'   = ETAT1                   ;                           
+   WTAB.'ETAT1'   = ETAT1                   ;                           
+   WTAB.'MAT0'    = PAS_MATE PRECED ETAT1   ;                           
+   WTAB.'MAT1'    = WTAB.'MAT0'             ;                           
+'SINO'                                      ;                           
+   WTAB.'ETAT1'   = ETAT1                   ;                           
+   WTAB.'MAT1'    = PAS_MATE PRECED ETAT1   ;                           
+'FINS'                                      ;                           
+                                                                        
+'SI' WTAB.'FOR_MECA'                                              ;     
+  'SI' (WTAB.'CHAR_THE' 'OU'  WTAB.'FOR_THER' )                   ;     
+     WTAB.'ETHER2' WTAB.'MSRTHER2' = PAS_EPTH PRECED WTAB.'MO_TOT'      
+                                         WTAB.'MAT1' WTAB.'TET1'  ;     
+  'FINS'                                                          ;     
+'FINS'                                                            ;     
+                                                                        
+ 'SI' WTAB.'PROCEDURE_PERSO1';                                          
+    PRECED.'PERSO1_APPEL' = 1 ;                                         
+    PERSO1 PRECED ;                                                     
+    'SI' ('EXIS' PRECED 'ARRET') ;                                      
+      WTAB . 'ARRET' = PRECED . 'ARRET' ;                               
+    'FINSI' ;                                                           
+ 'FINSI';                                                               
+                                                                        
+ 'SI' WTAB.'PROCEDURE_REAC_MECA' ;                                      
+     REEV_MEC PRECED 0      ;                                           
+ 'FINSI' ;                                                              
+                                                                        
+                                                                        
+PASFINAL = 0 ;     IPAS = 0 ;     ICHG=0;                               
+IAUTO  =1;                                                              
+IREREDU=VRAI;                                                           
+TEMP0  =  WTAB.'TEMPS0';                                                
+ISAUV  =VRAI;                                                           
+ DTV   = ('EXTR' wtab.'TEMPS_CALCULES' 1) - TEMP0 ;                     
+ 'SI' (DTV '<' 1.e-15 );                                                
+  'SI' WTAB . 'FREQUENTIEL' ;                                           
+     DTV = 1.e-14 ;                                                     
+  'SINON' ;                                                             
+     DTV = ('EXTR' WTAB.'TEMPS_CALCULES' 2) - TEMP0 ;                   
+  'FINSI';                                                              
+ 'FINSI';                                                               
+WTAB.'ARRET'=FAUX; WTAB.'AUTODEUX'=FAUX;                                
+WTAB.'CONV'=VRAI;DT_AVANT=DTV;                                          
+WTAB.'NOMBRE_ITERATIONS'=12;                                            
+RFROT=0;                                                                
+                                                                        
+'REPETER' BEXTERN  ;                                                    
+                                                                        
+    NPAS='DIME' WTAB.'TEMPS_CALCULES';                                  
+    ICHG=ICHG + 1;  WTAB.'ICHG'= ICHG;                                  
+    'SI' ( ICHG '>' NPAS) ; 'QUITTER' BEXTERN; 'FINSI';                 
+    TI = 'EXTRAIRE'  WTAB.'TEMPS_CALCULES' ICHG ;                       
+    TIV=TI;                                                             
+    'SI' (WTAB.'FREQUENTIEL') ;                                         
+       'SI'  (TI '<' TEMP0 ) ;  'ITERER'  BEXTERN ; 'FINSI' ;           
+    'SINON' ;                                                           
+    'SI'  ((TI '<' TEMP0 ) 'OU' (TI 'EGA' PRECED.'TEMPS'. 0));          
+        'ITERER'  BEXTERN ;                                             
+    'FINSI'; 'FINSI';                                                   
+                                                                        
+    PASFINAL=PASFINAL+1;                                                
+    'SI' WTAB.'PAS_AJUSTE';                                             
+       DTV=DT_AVANT;                                                    
+       'SI' WTAB.'CONV';                                                
+           'SI' (WTAB.'NOMBRE_ITERATIONS' > 20);                        
+               DTV=DTV'/' (2. ** 0.5);                                  
+           'FINSI';                                                     
+           'SI' (WTAB.'NOMBRE_ITERATIONS' <  7);                        
+              'SI' IREREDU;                                             
+                  DTV=DTV '*' (2. ** 0.5);                              
+              'FINSI';                                                  
+           'FINSI';                                                     
+           DT_AVANT= DTV;                                               
+           IREREDU=VRAI;                                                
+       'SINON';                                                         
+           DTV=0.0000000001D0* DT_AVANT;                                
+           DT_AVANT= DT_AVANT /2.;                                      
+           IREREDU=FAUX;                                                
+       'FINSI';                                                         
+       TTI = DTV* 1.0000000001 + TEMP0;                                 
+       'SI' ( TTI '<EG' TIV ); TI=TTI;PASFINAL=0; 'FINSI';              
+    'FINSI';                                                            
+     PRECED.'ESTIMATION'.'TEMPS'=TI;                                    
+    'SI' (PASFINAL '>EG' 1.5) ; DT_AVANT= TI-TEMP0; 'FINSI';            
+    WTAB.'T_FINAL'= TI;                                                 
+    WTAB.'DT_INIT' = TI-TEMP0;                                          
+    'SI'((WTAB.'CONSOLIDATION' 'OU' WTAB.'DYNAMIQUE')                   
+         'ET' (WTAB.'DT_INIT' 'EGA' 0.));                               
+           'ITERER' BEXTERN;                                            
+    'FINSI';                                                            
+    WTAB.'DT'= WTAB.'DT_INIT';                                          
+                                                                        
+    IPAS = IPAS + 1;                                                    
+    WTAB.'PAS'=IPAS;                                                    
+                                                                        
+   'SI'( WTAB.'GRANDS_DEPLACEMENTS' 'OU'  WTAB.'FEFP_FORMULATION');     
+      'SI' (WTAB.'RECALCUL');                                           
+        'SI' ('EGA'  ( 'TYPE' GE0_DEB)  'CONFIGUR');                    
+          'FORM'  GE0_DEB;                                              
+        'FINSI';                                                        
+      'FINSI';                                                          
+    'FINSI';                                                            
+                                                                        
+     I_BOTH = 0 ;                                                       
+     'REPETER' BO_BOTH WTAB.'BOU_METH' ;                                
+        I_BOTH = I_BOTH + 1 ;                                           
+       'SI' WTAB.'CONVERGENCE_MEC_THE' ;                                
+          WTAB.'CHARGEMENT' = WTAB . 'CHARGEMENT_I' ;                   
+       'FINSI';                                                         
+                                                                        
+                                                                        
+       'SI' (WTAB.'FOR_THER' 'OU' WTAB.'FOR_DIFF') ;                    
+         'SI' WTAB.'FOR_MECA' ;                                         
+            'SI' (I_BOTH > 1) ;                                         
+               'SI' ( 'EXISTE' estim 'FOR' ) ;                          
+                  WTAB . 'RECARI' = VRAI ;                              
+                  WTAB . 'RECADET' = VRAI;                              
+                  WTAB.'REA_GEOM' = VRAI ;                              
+                  'FORM' estim.'FOR' ;                                  
+               'FINSI';                                                 
+            'FINSI' ;                                                   
+         'FINSI' ;                                                      
+                                                                        
+         'SI' (TI 'NEG' TEMP0);                                         
+           'SI' ('NON' ('EXISTE' PRECED 'PAS_MAX'));                    
+             WTAB.'TEM_CALC' = 'PROG' TI;                               
+           'SINON';                                                     
+             'SI' ((TEMP0 + PRECED.'PAS_MAX') '>EG' TI);                
+                WTAB.'TEM_CALC' = 'PROG' TI;                            
+             'SINON';                                                   
+                WTAB.'TEM_CALC' = 'PROG' TEMP0                          
+                                   'PAS'  PRECED.'PAS_MAX'  TI;         
+                WTAB.'TEM_CALC' = 'ENLE'  WTAB.'TEM_CALC' 1;            
+             'FINSI';                                                   
+           'FINSI';                                                     
+           'SI' ('NON' WTAB.'COUPLAGE'); 'MENAGE'; 'FINSI';             
+           'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'NONLINEAIRE');       
+              CHTER = TRANSNON PRECED;                                  
+           'FINSI';                                                     
+           'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'LINEAIRE');          
+             CHTER = TRANSLIN PRECED;                                   
+           'FINSI';                                                     
+           'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'DUPONT');            
+              WTAB.'NOUV_PAS' = ('EXTR' WTAB.'TEM_CALC' 1) - TEMP0;     
+              CHTER = DUPONT2 PRECED;                                   
+           'FINSI';                                                     
+           'SI' CHTER.'ERREUR';                                         
+              'ERREUR' ' ';                                             
+           'FINSI';                                                     
+                                                                        
+           'SI' WTAB.'FOR_THER' ;                                       
+             WTAB.'TET2'=CHTER.'INITIAL(2)' ;                           
+             WTAB.'CLIT'=CHTER.'CLIT' ;                                 
+             'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'NONLINEAIRE') ;    
+               'SI' WTAB.'RAYO' ;                                       
+                  WTAB.'RAYONNEMENT' = CHTER.'RAYONNEMENT' ;            
+               'FINSI'              ;                                   
+               'SI' ('NEG' WTAB.'RIBLO_T' 'INCONNU');                   
+                  WTAB.'RIBLO_T'       = CHTER.'RIBLO_T'       ;        
+                  WTAB.'LISEA_T'       = CHTER.'LISEA_T'       ;        
+               'FINSI' ;                                                
+               'SI' WTAB.'PHASE' ;                                      
+                  WTAB.'PROPPHAS'    = CHTER.'PROPPHAS'    ;            
+               'FINSI' ;                                                
+             'FINSI' ;                                                  
+             'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'DUPONT');          
+               'SI' WTAB.'RAYO' ;                                       
+                 WTAB.'RAYONNEMENT' = CHTER.'RAYONNEMENT' ;             
+               'FINSI' ;                                                
+             'FINSI';                                                   
+           'FINSI' ;                                                    
+           'SI' WTAB.'FOR_DIFF' ;                                       
+             WTAB.'CO2'=CHTER.'CO2';                                    
+             WTAB.'CLID'=CHTER.'CLID' ;                                 
+           'FINSI' ;                                                    
+         'FINSI';                                                       
+                                                                        
+         'SI' WTAB.'FOR_THER' ;                                         
+            estim.'TEMPERATURES' = WTAB.'TET2' ;                        
+            estim.'REACTIONS_THERMIQUES'='REAC' WTAB.'CLIT' WTAB.'TET2';
+           'SI' WTAB.'PHASE';                                           
+              estim.'PROPORTIONS_PHASE'= WTAB.'PROPPHAS';               
+           'FINSI';                                                     
+         'FINSI' ;                                                      
+                                                                        
+         'SI' WTAB.'FOR_DIFF' ;                                         
+            estim.'CONCENTRATIONS' = WTAB.'CO2' ;                       
+            estim.'REACTIONS_DIFFUSIONS' ='REAC' WTAB.'CLID' WTAB.'CO2';
+         'FINSI' ;                                                      
+                                                                        
+         'SI' WTAB.'PROCEDURE_REAC_THER' ;                              
+            REEV_THE PRECED  1 ;                                        
+         'FINSI' ;                                                      
+                                                                        
+            FORM GE0_DEB;                                               
+         'FINSI' ;                                                      
+                                                                        
+                                                                        
+      'SI' WTAB.'FOR_MECA' ;                                            
+         'MESSAGE' ' Numero du pas : ' IPAS                             
+'  Indice d evolution : ' ICHG ' -> temps :' TI;                        
+                                                                        
+        'SI' WTAB.'CHAR_THE';                                           
+            WTAB.'TET2' = 'TIRE' WTAB.'CHARGEMENT' 'T   ' TI;           
+        'FINSI';                                                        
+                                                                        
+        'SI' WTAB.'ITCAR';                                              
+          'SI'  ('EGA' WTAB.'CARA'  'INCONNU');                         
+             WTAB.'CARA' = WTAB.'MAT0';                                 
+          'FINSI';                                                      
+        'FINSI';                                                        
+                                                                        
+        'MENA' ;                                                        
+         TT = UNPAS  PRECED;                                            
+                                                                        
+         WTAB.'MO_TOT_PREC' = TT.'MO_TOT_PREC' ;                        
+                                                                        
+        'SI' (WTAB.'GRANDS_DEPLACEMENTS' 'OU' WTAB.'FEFP_FORMULATION'); 
+          'FORM'  WTAB.'FOR0';                                          
+        'FINSI';                                                        
+                                                                        
+         WTAB.'CONV' = TT.'CONV';                                       
+        'SI' ('NON' TT.'CONV' 'ET' ('NON' WTAB.'CONVERGENCE_FORCEE'));  
+            'ERREUR' 997 ;                                              
+        'FINSI';                                                        
+                                                                        
+         DEP0= conti.'DEPLACEMENTS';                                    
+         estim.'DEPLACEMENTS'= TT.'ZU1' ;                               
+         estim.'DEFORMATIONS'= TT.'DEFF';                               
+         estim.'CONTRAINTES' = TT.'SIGF'  ;                             
+         estim.'DFGRAD'      = TT.'DFGRAD';                             
+        'SI' WTAB.'IPLAVI' ;                                            
+           estim.'VARIABLES_INTERNES'        = TT.'VARF';               
+           estim.'DEFORMATIONS_INELASTIQUES' = TT.'DFPF';               
+        'FINSI' ;                                                       
+        'SI' WTAB.'GRANDS_DEPLACEMENTS' ;                               
+           estim.'FOR' = TT.'FOR' ;                                     
+        'FINSI' ;                                                       
+        'SI'  WTAB . 'DYNAMIQUE' ;                                      
+           estim.'VITESSES'      = TT.'VITI' ;                          
+           estim.'ACCELERATIONS' = TT.'ACCEI' ;                         
+        'FINSI';                                                        
+        'SI' WTAB.'PROCEDURE_REAC_MECA' ;                               
+           REEV_MEC PRECED   1     ;                                    
+        'FINSI' ;                                                       
+      'FINSI';                                                          
+                                                                        
+                                                                        
+                                                                        
+    'SI' WTAB.'CONVERGENCE_MEC_THE' ;                                   
+      'SI' (I_BOTH > 1) ;                                               
+        CHT1     = WTAB . 'THER_COURANT' ;                              
+        DUABS2   = 'ABS' (WTAB . 'THER_COURANTP' - CHT1) ;              
+        CRICOH1  = 0. ;                                                 
+        NBINCO1  = 'DIME' WTAB . 'PRIM_TOT' ;                           
+        'REPE' BINCO1 NBINCO1 ;                                         
+          LINCOI1  = 'MOTS' ('EXTR' WTAB . 'PRIM_TOT' &BINCO1) ;        
+          MDUABSI1 = 'MAXI' DUABS2 'AVEC' LINCOI1 ;                     
+          NORMI1   = 'MAXI' 'ABS' CHT1 'AVEC' LINCOI1 ;                 
+          'SI' (NORMI1 '<EG' (1.E-14 * MDUABSI1)) ;                     
+            NORMI1   = 1. ;                                             
+          'FINS' ;                                                      
+          CRICOHI1 = MDUABSI1 / NORMI1 ;                                
+          'SI' (CRICOHI1 '>' CRICOH1) ;                                 
+            CRICOH1  = CRICOHI1 ;                                       
+         'FINS' ;                                                       
+        'FIN' BINCO1 ;                                                  
+        WTAB.'CONV_THMEC' = CRICOH1 '<' (WTAB . 'CRITERE_COHERENCE') ;  
+        'SI'('NON' WTAB.'CONV_THMEC') ;                                 
+          'SI' (I_BOTH >EG WTAB.'BOU_METH');                            
+            'MESS' 'PAS DE COHERENCE TROUVEE MECANIQUE THERMIQUE' ;     
+            'ERREUR' 999;                                               
+          'FINSI' ;                                                     
+        'FINSI' ;                                                       
+      'SINON' ;                                                         
+        WTAB.'CONV_THMEC' = FAUX ;                                      
+      'FINSI' ;                                                         
+       WTAB . 'THER_COURANTP' = WTAB . 'THER_COURANT' ;                 
+    'SINON' ;                                                           
+      WTAB.'CONV_THMEC' = VRAI ;                                        
+    'FINSI' ;                                                           
+                                                                        
+    'SI' (WTAB.'CONV_THMEC') ;                                          
+       'QUITTER' BO_BOTH ;                                              
+    'FINSI' ;                                                           
+                                                                        
+    'SI' ('NEG' ('TYPE'  GE0_DEB) 'MOT') ;                              
+      FORME GE0_DEB;                                                    
+    'FINSI' ;                                                           
+                                                                        
+  'FIN' BO_BOTH ;                                                       
+                                                                        
+                                                                        
+      'SI' WTAB.'FOR_THER';                                             
+         WTAB.'TET2' = estim.'TEMPERATURES' ;                           
+         WTAB.'TET1'=WTAB.'TET2';                                       
+         'SI' ('EGA' WTAB.'PROCEDURE_THERMIQUE' 'DUPONT');              
+            WTAB.'TET0' = WTAB.'TET1';                                  
+            WTAB.'VIEUXPAS'   = WTAB.'NOUV_PAS';                        
+            WTAB.'RELAXATION_DUPONT' = CHTER.'RELAXATION_DUPONT';       
+            'SI' ('EXISTE' CHTER  'INITIAL(1)') ;                       
+               WTAB.'TET1' = CHTER.'INITIAL(1)';                        
+            'FINSI' ;                                                   
+         'FINSI';                                                       
+      'FINSI' ;                                                         
+                                                                        
+      'SI' WTAB.'FOR_DIFF';                                             
+        WTAB.'CO2' = estim.'CONCENTRATIONS' ;                           
+      'FINSI' ;                                                         
+                                                                        
+      'SI' WTAB.'FOR_MECA' ;                                            
+         'SI' ('EXISTE' TT 'SECOND_MEMBRE');                            
+           WTAB . 'SECOND_MEMBRE' = TT . 'SECOND_MEMBRE' ;              
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'SUCCES');                                   
+           WTAB . 'SUCCES' = TT . 'SUCCES' ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'AUTOCOEF');                                 
+           WTAB . 'AUTOCOEF' = TT . 'AUTOCOEF' ;                        
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'AUTOREDU');                                 
+           WTAB . 'AUTOREDU' = TT . 'AUTOREDU' ;                        
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'AUTORED1');                                 
+           WTAB . 'AUTORED1' = TT . 'AUTORED1' ;                        
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'RIBLO_M');                                  
+           WTAB . 'RIBLO_M' = TT . 'RIBLO_M' ;                          
+           WTAB . 'LISEA_M' = TT . 'LISEA_M' ;                          
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'INCREMENT');                                
+           WTAB . 'INCREMENT' = TT . 'INCREMENT' ;                      
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'INITEMPS');                                 
+           WTAB . 'INITEMPS' = TT . 'INITEMPS' ;                        
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'DT');                                       
+           WTAB . 'DT' = TT . 'DT' ;                                    
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'NBPLAS');                                   
+           WTAB . 'NBPLAS' = TT . 'NBPLAS' ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'NOMBRE_ITERATIONS');                        
+           WTAB . 'NOMBRE_ITERATIONS' = TT . 'NOMBRE_ITERATIONS' ;      
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'FFROT');                                    
+           WTAB . 'FFROT' = TT . 'FFROT' ;                              
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'RESIDU');                                   
+           WTAB . 'RESIDU' = TT . 'RESIDU' ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'FNONL');                                    
+           WTAB . 'FNONL' = TT . 'FNONL' ;                              
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'DTPREC');                                   
+           WTAB . 'DTPREC' = TT . 'DTPREC' ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'TET2');                                     
+           WTAB . 'TET2' = TT . 'TET2' ;                                
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'XDENO');                                    
+           WTAB . 'XDENO'  = TT . 'XDENO'  ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'XDENOM');                                   
+           WTAB . 'XDENOM' = TT . 'XDENOM' ;                            
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'LASTKTAN');                                 
+           WTAB . 'LASTKTAN' = TT . 'LASTKTAN' ;                        
+         'FINSI' ;                                                      
+         'SI' ('EXISTE' TT 'DFGRAD');                                   
+           WTAB . 'DFGRAD'=  TT .'DFGRAD';                              
+         'FINSI' ;                                                      
+         'SI' ('EXIS' TT 'ETHER2');                                     
+            WTAB.'ETHER1'= TT.'ETHER2';                                 
+            WTAB.'ETHER2'= TT.'ETHER2';                                 
+         'FINSI';                                                       
+         'SI' ('EXIS' TT 'MSRTHER2');                                   
+            WTAB.'MSRTHER1'= TT.'MSRTHER2';                             
+            WTAB.'MSRTHER2'= TT.'MSRTHER2';                             
+         'FINSI';                                                       
+         'SI' ('EXIS' TT 'DEFOR2');                                     
+            WTAB.'DEFOR1'= TT.'DEFOR2';                                 
+            WTAB.'DEFOR2'= TT.'DEFOR2';                                 
+         'FINSI';                                                       
+         'SI'('EXIS' TT 'ETAT2');                                       
+            WTAB.'ETAT1'= TT.'ETAT2';                                   
+         'FINSI';                                                       
+                                                                        
+         TT.'DEPTOT' = estim.'DEPLACEMENTS' ;                           
+         TT.'REAC'= 'REAC' TT.'DEPTOT' WTAB.'CLIM';                     
+         estim.'REACTIONS' = TT.'REAC' ;                                
+         'SI' WTAB.'CHAR_THE';                                          
+            WTAB.'ETHER2' = TT.'ETHER2';                                
+            'SI' WTAB.'POR1' ;                                          
+                WTAB.'MSRTHER2' = TT.'MSRTHER2';                        
+            'FINSI';                                                    
+         'FINSI';                                                       
+                                                                        
+         'SI' WTAB . 'DYNAMIQUE' ;                                      
+            'SI' WTAB . 'LIAISON_PERSISTANTE' ;                         
+                TT.'VITI' =  TT.'VITI' +  TT.'VAUX' ;                   
+            'SINON' ;                                                   
+             WTAB.'FREA1'  = TT.'FOPL' - TT.'REAC';                     
+                                                                        
+            TT.'VITI'= VITEUNIL TT.'ZRAIDV' WTAB.'MASSE' TT.'VITI'      
+         tt.'DEPT'   DEP0 WTAB.'DT'  WTAB.'SECOND_MEMBRE' WTAB;         
+           'SI' ( 'EXIS' WTAB 'RATE_VITEUNIL');                         
+           'ERREUR' 'Probleme dans viteunil' ; 'FINSI';                 
+            'FINSI' ;                                                   
+            'SI' ( 'NEG' WTAB.'REAPREC' 'INCONNU');                     
+             'SI' ('EGA' ('TYPE' (EXTR TT.'REAC' 'MAIL')) 'MAILLAGE');  
+               reacdif='REDU' WTAB.'REAPREC' (EXTR TT.'REAC' 'MAIL');   
+               TT.'REAC'=  TT.'REAC' - REACDIF;                         
+             'FINSI' ;                                                  
+              WTAB.'REAPREC'=TT.'REAC';                                 
+            'SINON';                                                    
+               WTAB . 'REAPREC'= TT.'REAC';                             
+            'FINSI';                                                    
+            estim.'VITESSES'  = TT.'VITI' ;                             
+            estim.'REACTIONS' = TT.'REAC' ;                             
+         'FINSI';                                                       
+                                                                        
+                                                                        
+                                                                        
+         'SI' WTAB . 'CONSOLIDATION' ;                                  
+             WTAB.'OPERATEUR'  = ROP;                                   
+         'FINSI';                                                       
+                                                                        
+                                                                        
+         'SI'   WTAB.'GRANDS_DEPLACEMENTS' ;                            
+            WTAB.'RECALCUL'= VRAI     ;                                 
+            GE0_DEB        = TT.'FOR' ;                                 
+           'SI' WTAB.'ITCAR' ;                                          
+              WTAB.'CARA' = TT.'CARA' ;                                 
+           'FINSI' ;                                                    
+         'FINSI';                                                       
+         'FORM' WTAB.'FOR0';                                            
+                                                                        
+         'SI' ('ET' (WTAB.'FEFP_FORMULATION')                           
+                (WTAB.'UPDATE_LAGRANGIAN')) ;                           
+            GE0_DEB = TT.'FOR' ; WTAB.'RECALCUL'=VRAI;                  
+         'FINSI';                                                       
+                                                                        
+                                                                        
+         'SI' (WTAB . 'RECADET') ;                                      
+            'OUBLIER'   ROP;                                            
+         'FINSI';                                                       
+                                                                        
+              DT2 =( TI - TEMP0)/10000.;                                
+         'SI' (WTAB . 'AUTOMATIQUE' 'OU' ('NON' WTAB.CONV));            
+              TEMP0 = ( TI - TEMP0) *  WTAB.'AUTOCOEF' + TEMP0;         
+       'MESS' ' Temps effectivement calcule et non converge : ' TEMP0;  
+              WTAB.'TEMPS0' = TEMP0;                                    
+         'SINON';                                                       
+              TEMP0=TI;                                                 
+              WTAB.'TEMPS0' = TEMP0;                                    
+         'FINSI';                                                       
+                                                                        
+                                                                        
+         'SI' (WTAB.'PROCEDURE_PERSO1');                                
+            PRECED.'PERSO1_APPEL' = 2 ;                                 
+            PERSO1 PRECED;                                              
+            'SI' ('EXIS' PRECED 'ARRET') ;                              
+              WTAB . 'ARRET' = PRECED . 'ARRET' ;                       
+            'FINSI' ;                                                   
+            TEMP0 =  WTAB.'TEMPS0' ;                                    
+         'FINSI';                                                       
+         'SI'   WTAB.'CONVERGENCE_MEC_THE' ;                            
+            WTAB.'CHARGEMENT_I' = WTAB.'CHARGEMENT' ;                   
+         'FINSI';                                                       
+      'FINSI';                                                          
+                                                                        
+      'SI' ('NON' WTAB.'FOR_MECA') ;                                    
+         DT2 =( TI - TEMP0)/10000.;                                     
+         TEMP0=TI;                                                      
+         WTAB.'TEMPS0' = TEMP0;                                         
+         TT = 'TABLE' ;                                                 
+      'FINSI';                                                          
+'SI' ('EXIS' WTAB 'RRRR') ;                                             
+'SI'  WTAB.'RECARI';                                                    
+   WTAB2= 'ENLEVER' WTAB 'RRRR';                                        
+   PRECED .'WTABLE'= WTAB2;                                             
+   WTAB=WTAB2;                                                          
+   'SI' ( 'EXIS' estim 'FOR') ;                                         
+   estim2= 'ENLEVER' estim 'FOR';                                       
+   estim= estim2;  PRECED.'ESTIMATION'=estim;                           
+   'FINSI';                                                             
+'FINSI'; 'FINSI';                                                       
+    ISAUV = PAS_RESU  TEMP0  iauto  PRECED  TT ;                        
+                                                                        
+                                                                        
+'SI' WTAB . 'AUTOMATIQUE'; IAUTO=IAUTO+1;                               
+  'SI' ((WTAB . 'AUTOCOEF'   EGA  0.9999999D0) 'OU'                     
+        (TEMP0 '>EG' TI)) ;                                             
+        TEMP0=TI;                                                       
+      'MESS' ' Objectif atteint ';                                      
+      'MESS' ' ';                                                       
+      WTAB.'AUTODEUX' = FAUX ;                                          
+      WTAB.AUTORED1 = 0 ;                                               
+      WTAB.AUTOREDU = 1. ;                                              
+      IAUTO=1;                                                          
+  'SINON';                                                              
+      'MESS' ' Objectif non atteint: On recommence';                    
+      'MESS' '  ';                                                      
+      'SI' ( IAUTO >EG WTAB.'AUTOPAS');                                 
+       'ERREUR' 1000;                                                   
+      'FINSI';                                                          
+      WTAB.'AUTODEUX'=VRAI;ICHG=ICHG - 1;                               
+  'FINSI';                                                              
+'FINSI';                                                                
+'SI'(WTAB.'CHAR_THE' 'OU' WTAB.'FOR_THER');                             
+       WTAB.'TET1'=WTAB.'TET2';                                         
+      'SI' WTAB.'FOR_MECA';                                             
+         WTAB.'ETHER1'=WTAB.'ETHER2';                                   
+      'FINSI';                                                          
+      'SI' WTAB.'POR1';                                                 
+         WTAB.'MSRTHER1'=WTAB.'MSRTHER2';                               
+      'FINSI';                                                          
+'FINSI' ;                                                               
+'SI' WTAB.'CHAR_DEFI' ; WTAB.'DEFOR1'=WTAB.'DEFOR2';'FINSI';            
+'SI' WTAB.'FOR_DIFF'  ; WTAB.'CO1'   =WTAB.'CO2'   ;'FINSI' ;           
+'SI' WTAB.'PAS_AJUSTE';                                                 
+ 'SI' ((TI < TIV) 'OU' ('NON' WTAB.'CONV')); ICHG=ICHG-1;'FINSI';       
+'FINSI';                                                                
+'SI'  WTAB.'ARRET';                                                     
+   'QUITTER' BEXTERN;                                                   
+'FINSI';                                                                
+'FIN'  BEXTERN;                                                         
+                                                                        
+ 'SI' ('NEG' WTAB.'AMORTISSEMENT' 'INCONNU');                           
+     WTAB.'AMORTISSEMENT' = TOTO ;                                      
+ 'FINSI';                                                               
+                                                                        
+ 'SI' ('NEG' ('TYPE'  GE0_DEB) 'MOT') ;                                 
+     'DETR' GE0_DEB;                                                    
+ 'FINSI' ;                                                              
+                                                                        
+ WTAB.'MAT1' = 'MOT' 'INCONNU';                                         
+                                                                        
+ 'MESS' ' ';                                                            
+ 'MESS'                                                                 
+'------------------- FIN DE LA PROCEDURE PASAPAS ---------------------';
+'SAUTER' 1 'LIGNE';                                                     
+'SI' ('EXIS' WTAB 'RRRR') ;                                             
+   WTAB1= 'ENLEVER' WTAB 'RRRR';                                        
+    PRECED .'WTABLE'= WTAB1;                                            
+'FINSI';                                                                
+                                                                        
+PRECED.'SOUSTYPE' = 'MOT' 'PASAPAS' ;                                   
+                                                                        
+'FINPROC' PRECED ;                                                      
+DEBPROC PAS_DEFA PRECED*'TABLE';                                        
+INOUV=VRAI;                                                             
+'SI' ('EXIS' PRECED 'REPRISE');                                         
+  'SI' (PRECED.'REPRISE' > 0.);                                         
+     PAS_REPR PRECED;                                                   
+  'FINSI';                                                              
+'FINSI';                                                                
+'SI' ('EXIS' PRECED 'WTABLE');                                          
+  WTAB=PRECED.'WTABLE';WTAB.'NOUVEAU'=FAUX;INOUV=FAUX;                  
+'SINON';                                                                
+  WTAB='TABLE';                                                         
+  PRECED.'WTABLE'=WTAB;                                                 
+'FINSI';                                                                
+                                                                        
+'SI' INOUV;                                                             
+  'SI' (( 'EXISTE' PRECED 'GRANDES_ROTATIONS') 'OU'                     
+      ('EXISTE' PRECED 'GRANDES_DEFORMATIONS' ));                       
+        'MESS' 'ATTENTION LES DONNEES CONCERNANT LES GRANDES ROTATIONS';
+        'MESS' ' ET GRANDES DEFORMATIONS ONT CHANGE.';                  
+        'MESS' ' Voir le mot EPSILON des operateurs OPTION ou MODELE';  
+        'MESS' ' Arret de Cast3M';                                      
+        'ERREUR'   5 ;                                                  
+  'FINSI';                                                              
+  'SI' ( 'EXISTE' PRECED 'CONTACT' ) ;                                  
+     'MESS' ' ATTENTION :' ;                                            
+     'MESS' ' Les donnees concernant le CONTACT dans PASAPAS ont ete'   
+            ' modifiees :' ;                                            
+     'MESS' ' - L indice CONTACT de la table de PASAPAS n existe plus.';
+     'MESS' ' - Il faut definir un MODELE de CONTACT.' ;                
+     'MESS' ' Arret de Cast3M' ;                                        
+     'ERREUR' 5 ;                                                       
+  'FINSI';                                                              
+                                                                        
+ WTAB.'ADVECTION'=FAUX;                                                 
+  WTAB.'AMORTISSEMENT'='MOT' 'INCONNU';                                 
+  WTAB.'ARRET'=FAUX;                                                    
+  WTAB.'AUTOCRIT'= 0.005;                                               
+  WTAB.'AUTOCOEF'='MOT' 'INCONNU';                                      
+  WTAB.'AUTODEUX'=FAUX;                                                 
+  WTAB.'AUTOMATIQUE'= FAUX;                                             
+  WTAB.'AUTOPAS'= 250;                                                  
+  WTAB.'AUTOREDU'=1.D0;                                                 
+  WTAB.'AUTORED1'='MOT' 'INCONNU';                                      
+  WTAB.'BETON_HT' = FAUX;                                               
+  WTAB.'BLOCAGES_MECANIQUES'='MOT' 'INCONNU';                           
+  WTAB.'BLOCAGES_THERMIQUES'='MOT' 'INCONNU';                           
+  WTAB.'BLOCAGES_DIFFUSIONS'='MOT' 'INCONNU';                           
+  WTAB.'BOU_METH'=1;                                                    
+  WTAB.'CAFROTTE' = FAUX ;                                              
+  WTAB.'CAPACONST'=FAUX;                                                
+  WTAB.'CARA'='MOT' 'INCONNU';                                          
+  WTAB.'CARACTERISTIQUES'= 'MOT' 'INCONNU';                             
+  WTAB.'CELSIUS'=FAUX;                                                  
+  WTAB.'CERAMIQUE'=FAUX;                                                
+  WTAB.'CHARGEMENT'='MOT' 'INCONNU';                                    
+  WTAB.'CHARGEMENT_I'='MOT' 'INCONNU';                                  
+  WTAB.'CHAR_DEFI'=FAUX;                                                
+  WTAB.'CHAR_PRES'=FAUX;                                                
+  WTAB.'CHAR_THE' = FAUX;                                               
+  WTAB.'CLIM'='MOT' 'INCONNU';                                          
+  WTAB.'CONDCONST'=FAUX;                                                
+  WTAB.'CONDUCTION'=FAUX;                                               
+  WTAB.'CONSOLIDATION'=FAUX;                                            
+  WTAB.'CONTACT' = FAUX ;                                               
+  WTAB.'CONV'=VRAI;                                                     
+  WTAB.'CONVERGENCE_FORCEE' = VRAI;                                     
+  WTAB.'CONVERGENCE_MEC_THE'=FAUX;                                      
+  WTAB.'CONVERGENCE_MONOTONE' = FAUX;                                   
+  WTAB.'CONVECTION' = FAUX;                                             
+  WTAB.'CONV_THMEC'=VRAI;                                               
+  WTAB.'COUPLAGE' = FAUX;                                               
+  WTAB.'CO1'=0;                                                         
+  WTAB.'CO2'=0;                                                         
+  WTAB.'CTE_STEFAN_BOLTZMANN' = 5.673E-8 ;                              
+  WTAB.'DEJA_CALC_CHARTHER'=0.d0;                                       
+  WTAB.'DELTAITER'=10;                                                  
+  WTAB.'DT'='MOT' 'INCONNU';                                            
+  WTAB.'DTPREC'='MOT' 'INCONNU';                                        
+  WTAB.'DT_INIT'=0.D0;                                                  
+  WTAB.'DYNAMIQUE'=FAUX;                                                
+  WTAB.'ENDOMMAGEMENT'=FAUX;                                            
+  WTAB.'EPOQUE' = DATE 'EPOCH';                                         
+  WTAB.'ETHER1'='MOT' 'INCONNU';                                        
+  WTAB.'ETREF'='MOT' 'INCONNU';                                         
+  WTAB.'FNONL'='MOT' 'INCONNU';                                         
+  WTAB.'FOR'='MOT' 'INCONNU';                                           
+  WTAB.'FOR0'='FORM';                                                   
+  WTAB.'FOR_DIFF' = FAUX;                                               
+  WTAB.'FEFP_FORMULATION' = FAUX;                                       
+  WTAB.'FFROT'='MOT' 'INCONNU';                                         
+  WTAB.'FREA1'='MOT' 'INCONNU';                                         
+  WTAB.'FREQUENTIEL'= FAUX;                                             
+  WTAB.'FTOL'='MOT' 'INCONNU';                                          
+  WTAB.'GRANDS_DEPLACEMENTS' = FAUX;                                    
+  WTAB.'INCREMENT'='MOT' 'INCONNU';                                     
+  WTAB.'INITEMPS'= FAUX;                                                
+  WTAB.'INITIALISATION'= VRAI;                                          
+  WTAB.'IPLAVI'=FAUX;                                                   
+  WTAB.'IPRESU'='MOT' 'INCONNU';                                        
+  WTAB.'IPTIME'='MOT' 'INCONNU';                                        
+  WTAB.'ISAUVEGA'='MOT' 'INCONNU';                                      
+  WTAB.'ISAUVEGL'=FAUX;                                                 
+  WTAB.'ITCAR'=FAUX;                                                    
+  WTAB.'K_SIGMA'=FAUX;                                                  
+  WTAB.'K_TANGENT'=FAUX;                                                
+  WTAB.'K_TANGENT_ITER0'='MOT' 'INCONNU';                               
+  WTAB.'K_TANGENT_PERT'=FAUX;                                           
+  WTAB.'K_TANGENT_SYME'=FAUX;                                           
+  WTAB.'K_TANG_PERT_C1'= 1.D-3;                                         
+  WTAB.'K_TANG_PERT_C2'='MOT' 'INCONNU';                                
+  WTAB.'LASTKTAN'='MOT' 'INCONNU';                                      
+  WTAB.'LAG_TOT'=VRAI ;                                                 
+  WTAB.'LDEVA'='MOT' 'INCONNU';                                         
+  WTAB.'LECONOMI'=FAUX;                                                 
+  WTAB.'LIAISON_PERSISTANTE' =FAUX;                                     
+  WTAB.'LINESEARCH' = FAUX;                                             
+  WTAB.'LISEA_M'='MOT' 'INCONNU';                                       
+  WTAB.'LISEA_T'='MOT' 'INCONNU';                                       
+  WTAB.'LPAR0'='MOT' 'INCONNU';                                         
+  WTAB.'MAN'= FAUX;                                                     
+  WTAB.'MASSCONST'=FAUX;                                                
+                                                                        
+                                                                        
+  WTAB.'ETAT0'='MOT' 'INCONNU';                                         
+  WTAB.'ETAT1'='MOT' 'INCONNU';                                         
+  WTAB.'ETAT_REF'='MOT' 'INCONNU';                                      
+  WTAB.'MAT0'='MOT' 'INCONNU';                                          
+  WTAB.'MAT1'='MOT' 'INCONNU';                                          
+  WTAB.'MAT_REF'='MOT' 'INCONNU';                                       
+  WTAB.'MATVAR' = FAUX;                                                 
+  WTAB.'MAT_CON'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_DIF'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_MEC'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_PHA'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_POR'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_RAY'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_THE'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_THM'= 'MOT' 'INCONNU';                                      
+  WTAB.'MAT_T'  = 'MOT' 'INCONNU';                                      
+  WTAB.'MAT_TOT'='MOT' 'INCONNU';                                       
+  WTAB.'MAXDEFOR'= 1.e-3;                                               
+  WTAB.'MAXITERATION' = 49;                                             
+  WTAB.'MAXSOUSPAS' = 100;                                              
+  WTAB.'MAXISOUSPAS'= 2000;                                             
+  WTAB.'MA_TOT'='MOT' 'INCONNU';                                        
+  WTAB.'MA_TOTAL'= 'MOT' 'INCONNU';                                     
+  WTAB.'MEC1' = FAUX;                                                   
+  WTAB.'MESSTHER' = VRAI ;                                              
+  WTAB.'MODAL' = FAUX;                                                  
+  WTAB.'MOD_ADV'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_CON'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_DIF'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_MEC'= 'MOT' 'INCONNU';                                      
+  WTAB.'MOD_PHA'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_POR'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_RAY'='MOT' 'INCONNU';                                       
+  WTAB.'MOD_THE'= 'MOT' 'INCONNU';                                      
+  WTAB.'MOD_THM'= 'MOT' 'INCONNU';                                      
+  WTAB.'MOD_T'  = 'MOT' 'INCONNU';                                      
+  WTAB.'MOD_TOT'= 'MOT' 'INCONNU';                                      
+  WTAB.'MO_TOT' ='MOT' 'INCONNU';                                       
+  WTAB.'MO_TOT_PREC' ='MOT' 'INCONNU';                                  
+  WTAB.'MO_TOTAL'=PRECED.'MODELE';                                      
+  WTAB.'MOVA' = 'MOT' 'EPSE';                                           
+  WTAB.'MSRTHER1'='MOT' 'INCONNU';                                      
+  WTAB.'MSRTHER2'='MOT' 'INCONNU';                                      
+  WTAB.'MTOL'='MOT' 'INCONNU';                                          
+  WTAB.'NAURES'=100000;                                                 
+  WTAB.'NBPLAS'='MOT' 'INCONNU';                                        
+  WTAB.'NB_EL_PARA'=1000;                                               
+  WTAB.'NFSOR'=0;                                                       
+  WTAB.'NITERINTER_MAX' = 15;                                           
+  WTAB.'NITER_KTANGENT' = 1;                                            
+  WTAB.'NLOC' = FAUX ;                                                  
+  WTAB.'NMAXSUBSTEPS' = 1;                                              
+  WTAB.'NOMBRE_ITERATIONS'='MOT' 'INCONNU';                             
+  WTAB.'NON_LINEAIRE'= FAUX;                                            
+  WTAB.'NON_LOCAL' = 'MOT' 'INCONNU' ;                                  
+  WTAB.'NOUVEAU'=VRAI;                                                  
+  WTAB.'NOUV_PAS'=0.D0;                                                 
+  WTAB.'NSOR'=0;                                                        
+  WTAB.'OPERATEUR'='MOT' 'INCONNU';                                     
+  WTAB.'ORDRE'=12;                                                      
+  WTAB.'PARA_EXTE' = FAUX;                                              
+  WTAB.'PAS'=0;                                                         
+  WTAB.'PAS_AJUSTE' = FAUX;                                             
+  WTAB.'PAS_REDU'=FAUX;                                                 
+  WTAB.'PHASE'=FAUX;                                                    
+  WTAB.'PLASTIQUE' = FAUX;                                              
+  WTAB.'POR1' = FAUX;                                                   
+  WTAB.'PRECDECHARGE' = 1.E-2;                                          
+  WTAB.'PRECFLEX' = 1.E-4;                                              
+  WTAB.'PRECISINTER' = 1.D-8;                                           
+  WTAB.'PRECISION' = 1.E-4 ;                                            
+  WTAB.'PREDICTEUR' = 'MOT' 'INCONNU';                                  
+  WTAB.'PROCEDURE'='MOT' 'PASAPAS';                                     
+  WTAB.'PROCEDURE_CHAR_MECA'=FAUX;                                      
+  WTAB.'PROCEDURE_CHAR_THER'=FAUX;                                      
+  WTAB.'PROCEDURE_CONV'=FAUX;                                           
+  WTAB.'PROCEDURE_PARA_THER' = FAUX ;                                   
+  WTAB.'PROCEDURE_PERSO1' = FAUX;                                       
+  WTAB.'PROCEDURE_PERSO2' = FAUX;                                       
+  WTAB.'PROCEDURE_REAC_MECA' = FAUX ;                                   
+  WTAB.'PROCEDURE_REAC_THER' = FAUX ;                                   
+  WTAB.'PROCEDURE_THERMIQUE'='MOT' 'DUPONT';                            
+  WTAB.'PROCESSEURS'='MOT' 'INCONNU';                                   
+  WTAB.'PROJECTION'= FAUX;                                              
+  WTAB.'RAIDCONST' = FAUX;                                              
+  WTAB.'RAIDAUGM' = FAUX;                                               
+  WTAB.'RAYO'=FAUX;                                                     
+  WTAB.'RAYONNEMENT'='MOT' 'INCONNU';                                   
+  WTAB.'REAC_GRANDS'= 0.1 ;                                             
+  WTAB.'REA_GEOM' = FAUX ;                                              
+  WTAB.'REAPREC'='MOT' 'INCONNU';                                       
+  WTAB.'RECALCUL'= FAUX;                                                
+  WTAB.'RECAOP'  = VRAI;                                                
+  WTAB.'RECADET' = FAUX;                                                
+  WTAB.'RECARI'  = FAUX;                                                
+  WTAB.'RELAXATION_DUPONT'=0.25;                                        
+  WTAB.'RELAXATION_NONCONV' = 1.;                                       
+  WTAB.'RELAXATION_THETA'= 1. ;                                         
+  WTAB.'RENORMALISATION' = FAUX;                                        
+  WTAB.'RESIDU'='MOT' 'INCONNU';                                        
+  WTAB.'RIBLO_M'='MOT' 'INCONNU';                                       
+  WTAB.'RIBLO_T'='MOT' 'INCONNU';                                       
+  WTAB.'RIGIDITE_CONSTANTE'= 'MOT' 'INCONNU';                           
+  WTAB.'SECOND_MEMBRE'='MOT' 'INCONNU';                                 
+  WTAB.'SOUS_INCREMENT'=1 ;                                             
+  WTAB.'STABILITE' = FAUX;                                              
+  WTAB.'SUBSTEPPING'=FAUX;                                              
+  WTAB.'SUCCES'=VRAI;                                                   
+  WTAB.'TABSAUV'='MOT' 'INCONNU';                                       
+  WTAB.'TALPHA_REFERENCE'='MOT' 'INCONNU';                              
+  WTAB.'TEMPERATURE_REFERENCE' = 'MOT' 'INCONNU' ;                      
+  WTAB.'TEMPS0'=0.D0;                                                   
+  WTAB.'TEMPS_CALCULES'='MOT' 'INCONNU';                                
+  WTAB.'TEM_CALC'='MOT' 'INCONNU';                                      
+  WTAB.'TETA'=  1.0D0;                                                  
+  WTAB.'TET0'=0;                                                        
+  WTAB.'TET1'=0;                                                        
+  WTAB.'TET2'=0;                                                        
+  WTAB.'THE1' = FAUX;                                                   
+  WTAB.'THER_COURANT'='MOT' 'INCONNU';                                  
+  WTAB.'THM1' = FAUX;                                                   
+  WTAB.'TREF'='MOT' 'INCONNU';                                          
+  WTAB.'T_FINAL'=0.D0;                                                  
+  WTAB.'UPDATE_LAGRANGIAN' = FAUX;                                      
+  WTAB.'VIEUXPAS'=0.D0;                                                 
+  WTAB.'VISCODOMMAGE'=FAUX;                                             
+  WTAB.'VISCOPLASTIQUE' = FAUX;                                         
+  WTAB.'VISCO_EXTERNE'=FAUX;                                            
+  WTAB.'XDENO'=0.d0;                                                    
+  WTAB.'XDENOM'=0.d0;                                                   
+  'SI' ( 'EXIS' PRECED 'CONTINUATION' );                                
+     iii = 'INDEX' PRECED;nii= 'DIME' iii;                              
+     'REPETER' boui nii;                                                
+     imo=0;                                                             
+     'SI' ('EGA' ('TYPE' iii.&boui ) 'MOT     '); imo=1; 'FINSI';       
+      'SI' ('EGA' imo 1);  aa= 'MOT' iii.&boui;                         
+      'SINON';  aa=   iii.&boui; 'FINSI';                               
+       'SI'('NON' ('EXIS' wtab aa));                                    
+         WTAB . aa = PRECED . aa;                                       
+       'FINSI';                                                         
+     'FIN' BOUI;                                                        
+  'FINSI';                                                              
+  'SI' ('EXIS' PRECED 'REPRISE');                                       
+     'SI' ( > PRECED.'REPRISE' 0);                                      
+       ii= 'INDEX' (preced.'TEMPS');                                    
+       nn = 'DIME' ii; nsor = ii . nn;                                  
+       temps0= PRECED. 'TEMPS' . nsor;                                  
+       WTAB.'NSOR' = NSOR;                                              
+       WTAB.'TEMPS0'=temps0;                                            
+     'FINSI';                                                           
+  'FINSI';                                                              
+                                                                        
+'SINON';                                                                
+  WTAB.'AMORTISSEMENT'        ='MOT' 'INCONNU' ;                        
+  WTAB.'ETAT_REF'             ='MOT' 'INCONNU' ;                        
+  WTAB.'MAT_REF'              ='MOT' 'INCONNU' ;                        
+  WTAB.'ETREF'                ='MOT' 'INCONNU' ;                        
+  WTAB.'AUTOMATIQUE'          = FAUX;                                   
+  WTAB.'CAPACONST'            = FAUX;                                   
+  WTAB.'CHARGEMENT'           ='MOT' 'INCONNU' ;                        
+  WTAB.'CHAR_DEFI'            = FAUX;                                   
+  WTAB.'CHAR_PRES'            = FAUX;                                   
+  WTAB.'CHAR_THE'             = FAUX;                                   
+  WTAB.'CONDCONST'            = FAUX;                                   
+  WTAB.'CONVERGENCE_FORCEE'   = VRAI;                                   
+  WTAB.'CONVERGENCE_MONOTONE' = FAUX;                                   
+  WTAB.'DYNAMIQUE'            = FAUX;                                   
+  WTAB.'EPOQUE'               ='DATE' 'EPOCH';                          
+  WTAB.'FREQUENTIEL'          = FAUX;                                   
+  WTAB.'FTOL'                 ='MOT' 'INCONNU' ;                        
+  WTAB.'INITIALISATION'       = VRAI;                                   
+  WTAB.'ISAUVEGA'             ='MOT' 'INCONNU' ;                        
+  WTAB.'ISAUVEGL'             = FAUX;                                   
+  WTAB.'K_SIGMA'              = FAUX;                                   
+  WTAB.'K_TANGENT'            = FAUX;                                   
+  WTAB.'K_TANGENT_ITER0'      ='MOT' 'INCONNU' ;                        
+  WTAB.'K_TANGENT_PERT'       = FAUX ;                                  
+  WTAB.'K_TANGENT_SYME'       = FAUX ;                                  
+  WTAB.'K_TANG_PERT_C1'       = 1.D-3 ;                                 
+  WTAB.'K_TANG_PERT_C2'       ='MOT' 'INCONNU' ;                        
+  WTAB.'LAG_TOT'              = VRAI;                                   
+  WTAB.'LECONOMI'             = FAUX;                                   
+  WTAB.'LIAISON_PERSISTANTE'  = FAUX;                                   
+  WTAB.'LINESEARCH'           = FAUX;                                   
+  WTAB.'MASSCONST'            = FAUX;                                   
+  WTAB.'MTOL'                 ='MOT' 'INCONNU' ;                        
+ 'SI' ('NON' ('EXISTE' WTAB  'OPERATEUR'));                             
+    WTAB.'OPERATEUR' = 'MOT' 'INCONNU' ;                                
+ 'FINSI' ;                                                              
+ 'SI' ('EXISTE' WTAB 'NON_LOCAL') ;                                     
+   'SI' ('EGA' ('TYPE' WTAB.'NON_LOCAL') 'LOGIQUE') ;                   
+      WTAB.'NLOC' = WTAB.'NON_LOCAL' ;                                  
+      WTAB.'NON_LOCAL' = 'MOT' 'INCONNU' ;                              
+     'SI' WTAB.'NLOC' ; WTAB.'NON_LOCAL' = 'MOT' 'MOYE' ; 'FINSI' ;     
+   'SINON' ;                                                            
+     'SI' ('NEG' ('TYPE' WTAB.'NON_LOCAL') 'MOT') ;                     
+        WTAB.'NLOC' = FAUX ;                                            
+        WTAB.'NON_LOCAL' = 'MOT' 'INCONNU' ;                            
+     'FINSI' ;                                                          
+   'FINS' ;                                                             
+ 'SINON' ;                                                              
+   WTAB.'NLOC' = FAUX ;                                                 
+   WTAB.'NON_LOCAL' = 'MOT' 'INCONNU' ;                                 
+ 'FINS' ;                                                               
+  WTAB.'PAS_AJUSTE'          = FAUX ;                                   
+  WTAB.'PAS_REDU'            = FAUX ;                                   
+  WTAB.'PROCEDURE_CHAR_MECA' = FAUX ;                                   
+  WTAB.'PROCEDURE_CHAR_THER' = FAUX ;                                   
+  WTAB.'PROCEDURE_PARA_THER' = FAUX ;                                   
+  WTAB.'PROCEDURE_PERSO1'    = FAUX ;                                   
+  WTAB.'PROCEDURE_PERSO2'    = FAUX ;                                   
+  WTAB.'PROCEDURE_REAC_MECA' = FAUX ;                                   
+  WTAB.'PROCEDURE_REAC_THER' = FAUX ;                                   
+  WTAB.'PROCESSEURS'         ='MOT' 'INCONNU' ;                         
+  WTAB.'PROJECTION'          = FAUX ;                                   
+  WTAB.'RAIDCONST'           = FAUX ;                                   
+  WTAB.'RAIDAUGM'            = FAUX ;                                   
+  WTAB.'RAYO'                = FAUX ;                                   
+  WTAB.'RELAXATION_NONCONV'  = 1.   ;                                   
+  WTAB.'RENORMALISATION'     = FAUX ;                                   
+  WTAB.'STABILITE'           = FAUX ;                                   
+  WTAB.'TEMPS_CALCULES'      ='MOT' 'INCONNU' ;                         
+  WTAB.'THM1'                = FAUX ;                                   
+  WTAB.'MOD_THM'             ='MOT' 'INCONNU' ;                         
+  WTAB.'MAT_THM'             ='MOT' 'INCONNU' ;                         
+  WTAB.'MOD_T'               ='MOT' 'INCONNU' ;                         
+  WTAB.'MAT_T'               ='MOT' 'INCONNU' ;                         
+  'SI'('NON' ('EXIS' WTAB 'REAC_GRANDS'));                              
+     WTAB.'REAC_GRANDS' = 0.1 ;                                         
+  'SINO' ;                                                              
+    'SI' ('NEG' ('TYPE' WTAB . 'REAC_GRANDS') 'FLOTTANT') ;             
+       WTAB.'REAC_GRANDS' = 0.1 ;                                       
+    'FINS' ;                                                            
+  'FINSI';                                                              
+  'SI' ('NON' ('EXISTE' WTAB 'TET_INI')) ;                              
+     WTAB.'TET_INI' = 'MOT' 'INCONNU' ;                                 
+  'FINSI';                                                              
+  WTAB.'FOR_DIFF'= FAUX ;                                               
+  WTAB.'MOD_DIF'='MOT' 'INCONNU';                                       
+  WTAB.'MAT_DIF'='MOT' 'INCONNU';                                       
+'FINSI';                                                                
+                                                                        
+                                                                        
+WTAB.'FREQUENTIEL' = 'EGA' ('VALE' 'MODE') 'FREQ' ;                     
+                                                                        
+'SI' ( 'EXISTE' PRECED 'MODELE');                                       
+    MO= PRECED.'MODELE';                                                
+    TYP1 = 'TYPE' MO;                                                   
+   'SI' ('NEG' TYP1 'MMODEL  ');                                        
+      'ERREUR' 'Le type du MODELE est incorrect';                       
+   'FINSI';                                                             
+    WTAB.'MO_TOTAL'=MO;                                                 
+'SINON';                                                                
+   'ERREUR' 'Il manque la donnee du modele.';                           
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' PRECED 'CHARGEMENT');                                    
+   TYP1 = 'TYPE' (PRECED.'CHARGEMENT');                                 
+   'SI' ('NEG' TYP1 'CHARGEME');                                        
+      'ERREUR' 'Le type du CHARGEMENT est incorrect';                   
+   'FINSI';                                                             
+   WTAB.'CHARGEMENT'=PRECED.'CHARGEMENT';                               
+'SINON';                                                                
+    MAGEO= 'EXTR' MO 'MAILLAGE' ;                                       
+    WTAB.'CHARGEMENT' = 'CHAR' 'FARFELU'                                
+    ( 'MANU' 'CHPO' MAGEO 1 'FARF' 0.)                                  
+    ( 'EVOL' 'MANU'  ('PROG' 0. 10.e15 ) ('PROG' 0. 10.e15));           
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'CARACTERISTIQUES');                              
+   MA= PRECED.'CARACTERISTIQUES'  ;                                     
+   TYP1 = 'TYPE' MA ;                                                   
+   'SI' ('NEG' TYP1 'MCHAML  ');                                        
+      'ERREUR' 'Le type du champ de materiau est incorrect';            
+   'FINSI';                                                             
+   WTAB.'CARACTERISTIQUES'=MA ;                                         
+   WTAB.'MA_TOTAL'=MA;                                                  
+'SINON';                                                                
+   'ERREUR' 'Il manque la donnee du materiau.';                         
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'TEMPS_CALCULES');                                
+   TYP1 = 'TYPE' PRECED.'TEMPS_CALCULES';                               
+   'SI' ('NEG' TYP1 'LISTREEL');                                        
+      'ERREUR' 'Le type de TEMPS_CALCULES est incorrect';               
+   'FINSI';                                                             
+   WTAB.'TEMPS_CALCULES'= PRECED.'TEMPS_CALCULES';                      
+'FINSI';                                                                
+'SI' (WTAB.'FREQUENTIEL' 'ET'                                           
+                 ('NON' ('EXISTE' PRECED 'TEMPS_CALCULES')));           
+ l_zf = 'PROG' ; l_ii = 'PROG' 1. 'PAS' 0.3 4. 'PAS' 1. 10. ;           
+ 'SI' ('EXISTE' WTAB.'CARACTERISTIQUES' 'FREQ') ;                       
+  ccfr1 = 'EXCO' WTAB.'CARACTERISTIQUES' 'FREQ' 'NOID' ;                
+  'SI' ('EGA' ('TYPE' ccfr1) 'MCHAML  ') ;                              
+ ncfr1 = 'EXTR' ccfr1 'NBZO' ;                                          
+  'REPE' vfr1 ncfr1 ;                                                   
+   f1 = 'EXTR' ccfr1 'FREQ' &vfr1 1 1 ;                                 
+log_f1 = ('LOG' f1) / ('LOG' 10.) ;                                     
+                                                                        
+e10_f1 = 'ENTI' log_f1 ;                                                
+  'SI' (log_f1 < 0.) ; e10_f1 = e10_f1 - 1 ; 'FINSI' ;                  
+  'SI'((log_f1 - e10_f1) 'EGA' 0.) ; e10_f1 = e10_f1 - 1 ; 'FINSI' ;    
+p10_f1 = 10. ** e10_f1 ;                                                
+l_zf1 = 'PROG' (f1 - (p10_f1/10.)) (f1 - (p10_f1/100.))                 
+      (f1 - (p10_f1/1000.)) (f1 + (p10_f1/1000.)) ;                     
+                                                                        
+          l_i10 = l_ii * p10_f1 ;                                       
+   'SI' (('DIME' l_zf) 'EGA' 0) ;                                       
+      e10_min = e10_f1 ; e10_max = e10_f1 + 1 ;                         
+     l_zf = 'ORDO' (l_i10 'ET' l_zf1) 'UNIQ' ;                          
+   'SINON' ;                                                            
+     l_zf0 = l_zf ;                                                     
+     'SI' ((e10_f1 '>EG' e10_min) 'ET' (e10_f1 < e10_max)) ;            
+      l_zf = 'ORDO' (l_zf 'ET' l_zf1) 'UNIQ' ;                          
+     'SINON' ;                                                          
+       'SI' (e10_f1 < e10_min) ;                                        
+        e10_u = e10_f1 ;                                                
+        'REPE'  b_lz ;                                                  
+         l_zf0 = l_i10 'ET' l_zf0 ; e10_u = e10_u + 1 ;                 
+         'SI' (e10_u 'EGA' e10_min) ; 'QUIT' b_lz ; 'FINSI'  ;          
+         l_i10 = l_i10 * 10 ;                                           
+        'FIN'  b_lz ;                                                   
+        e10_min = e10_f1 ;                                              
+        l_zf = 'ORDO' (l_zf0 'ET' l_zf1) 'UNIQ' ;                       
+       'FINSI'  ;                                                       
+       'SI' (e10_f1 '>EG' e10_max) ;                                    
+        e10_u = e10_f1 ;                                                
+        'REPE'  b_lz ;                                                  
+         l_zf0 = l_i10 'ET' l_zf0 ; e10_u = e10_u - 1 ;                 
+         'SI' (e10_u < e10_max) ; 'QUIT' b_lz ; 'FINSI'  ;              
+         l_i10 = l_i10 / 10 ;                                           
+        'FIN'  b_lz ;                                                   
+        e10_max = e10_f1 + 1;                                           
+        l_zf = 'ORDO' (l_zf0 'ET' l_zf1) 'UNIQ' ;                       
+       'FINSI'  ;                                                       
+     'FINSI'  ;                                                         
+   'FINSI'  ;                                                           
+  'FIN'  vfr1 ;                                                         
+  'SINON' ;                                                             
+  l_zf = l_ii ;                                                         
+  'FINSI' ;                                                             
+  WTAB.'TEMPS_CALCULES' = l_zf ;                                        
+ 'SINON' ;                                                              
+  WTAB.'TEMPS_CALCULES' = l_ii ;                                        
+ 'FINSI' ;                                                              
+'FINSI' ;                                                               
+'SI' (WTAB.'FREQUENTIEL') ;                                             
+  'REPETER' BTFRE ;                                                     
+    TI = 'EXTRAIRE'  WTAB.'TEMPS_CALCULES' &BTFRE ;                     
+    'SI' (TI '>' 0.D0) ;                                                
+       WTAB.'TEMPS0' = TI ;                                             
+       'QUITTER' BTFRE ;                                                
+    'FINSI' ;                                                           
+ 'FIN' BTFRE ;                                                          
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'DELTAITER');                                     
+   WTAB.'DELTAITER'=PRECED.'DELTAITER';                                 
+'FINSI' ;                                                               
+'SI' ('EXISTE' PRECED 'AUTOMATIQUE');                                   
+  WTAB.'AUTOMATIQUE'= PRECED.'AUTOMATIQUE';                             
+'FINSI' ;                                                               
+'SI' ('EXISTE' PRECED 'FTOL' );                                         
+   WTAB.'FTOL' = PRECED.'FTOL';                                         
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'MTOL' );                                         
+   WTAB.'MTOL' = PRECED.'MTOL';                                         
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'PAS_AJUSTE');                                    
+    WTAB.'PAS_AJUSTE' =  PRECED.'PAS_AJUSTE';                           
+'SINON';                                                                
+   'SI'  (('NON' ( 'EXISTE' PRECED 'TEMPS_CALCULES' ))                  
+     'ET' ('EGA' ('TYPE' WTAB.'TEMPS_CALCULES') 'MOT')) ;               
+         WTAB.'PAS_AJUSTE' = VRAI;                                      
+        'SI'  ( 'NON' ( 'EXISTE' PRECED 'TEMPS_SAUVES' ));              
+            'ERREUR'                                                    
+          'Il manque la donnee des temps a sauver ou a calculer';       
+        'FINSI';                                                        
+        WTAB.'TEMPS_CALCULES'= PRECED.'TEMPS_SAUVES';                   
+        WTAB.'TEMPS_SAUVES' = PRECED.'TEMPS_SAUVES';                    
+   'FINSI';                                                             
+'FINSI';                                                                
+'SI' WTAB.'AUTOMATIQUE';  WTAB.'PAS_AJUSTE'= FAUX; 'FINSI';             
+                                                                        
+'SI' ( 'EGA' WTAB.'TEMPS_CALCULES' 'INCONNU');                          
+    'ERREUR' 'Il manque la donnee des TEMPS_CALCULES ';                 
+'FINSI';                                                                
+                                                                        
+  'SI' ('NEG' WTAB.'OPERATEUR' 'INCONNU');                              
+     WTAB.'RECAOP' = FAUX ;                                             
+  'FINSI' ;                                                             
+'SI'  ('EXISTE' PRECED  'PROCEDURE_CHAR_MECA');                         
+  WTAB.'PROCEDURE_CHAR_MECA'= PRECED . 'PROCEDURE_CHAR_MECA';           
+'FINSI';                                                                
+                                                                        
+'SI'  ('EXISTE' PRECED  'PROCESSEURS');                                 
+  WTAB.'PROCESSEURS'= 'MOT' PRECED  . 'PROCESSEURS';                    
+'FINSI';                                                                
+                                                                        
+'SI'  ('EXISTE' PRECED  'PROCEDURE_CHAR_THER');                         
+  WTAB.'PROCEDURE_CHAR_THER'= PRECED . 'PROCEDURE_CHAR_THER';           
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' PRECED 'PROCEDURE_PARA_THER') ;                          
+  WTAB.'PROCEDURE_PARA_THER' = PRECED.'PROCEDURE_PARA_THER' ;           
+'FINSI';                                                                
+                                                                        
+WTAB. 'PROCEDURE_THERMIQUE' = 'NONLINEAIRE';                            
+'SI' ('EXISTE' PRECED 'PROCEDURE_THERMIQUE');                           
+   WTAB. 'PROCEDURE_THERMIQUE' = PRECED.'PROCEDURE_THERMIQUE';          
+'FINSI';                                                                
+   'SI' ( 'EXISTE' PRECED 'CAPACITE_CONSTANTE');                        
+       WTAB.'CAPACITE_CONSTANTE'=PRECED.'CAPACITE_CONSTANTE';           
+       WTAB.'CAPACONST'=VRAI;                                           
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'CONDUCTIVITE_CONSTANTE');                    
+       WTAB.'CONDUCTIVITE_CONSTANTE'=PRECED.'CONDUCTIVITE_CONSTANTE';   
+       WTAB.'CONDCONST'=VRAI;                                           
+   'FINSI';                                                             
+'SI' ('EXISTE' MO 'FORM' 'THERMIQUE');                                  
+   'SI'('EXIS' PRECED 'CELSIUS');                                       
+     WTAB.'CELSIUS'=PRECED.'CELSIUS';                                   
+   'FINSI';                                                             
+   WTAB.'THE1'=VRAI;                                                    
+   WTAB.'MOD_THE' = 'EXTR' MO 'FORM' 'THERMIQUE';                       
+   WTAB.'MAT_THE' = 'REDU' MA WTAB.'MOD_THE';                           
+   WTAB.'MOD_T'   = WTAB.'MOD_THE' ;                                    
+   WTAB.'MAT_T'   = WTAB.'MAT_THE' ;                                    
+   WTAB.'THM1'= 'EXIS' MO 'FORM' 'THERMOHYDRIQUE' ;                     
+   'SI' WTAB.'THM1' ;                                                   
+     WTAB.'PROCEDURE_THERMIQUE'='NONLINEAIRE';                          
+     WTAB.'MOD_THM' = 'EXTR' MO 'FORM' 'THERMOHYDRIQUE' ;               
+     WTAB.'MAT_THM' = 'REDU' MA WTAB.'MOD_THM';                         
+     WTAB.'MOD_T'   = WTAB.'MOD_T' 'ET' WTAB.'MOD_THM' ;                
+     WTAB.'MAT_T'   = WTAB.'MAT_T' 'ET' WTAB.'MAT_THM' ;                
+   'FINSI' ;                                                            
+   WTAB.'MOD_TOT' = WTAB.'MOD_T' ;                                      
+   WTAB.'MAT_TOT' = WTAB.'MAT_T' ;                                      
+   WTAB.'PHASE' = 'EXISTE' WTAB.'MOD_THE' 'MATE' 'PHASE';               
+   'SI' WTAB.'PHASE';                                                   
+     WTAB.'PROCEDURE_THERMIQUE'='NONLINEAIRE';                          
+     WTAB.'MOD_PHA' = 'EXTR' WTAB.'MOD_THE' 'MATE' 'PHASE';             
+     WTAB.'MAT_PHA' = 'REDU' WTAB.'MAT_THE' WTAB.'MOD_PHA';             
+     WTAB.'BLO_PHASE' = PMAT WTAB.'MOD_PHA';                            
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' WTAB.'MOD_THE' 'MATE' 'CONVECTION');                 
+       WTAB.'MOD_CON' = 'EXTR' WTAB.'MOD_THE' 'MATE' 'CONVECTION';      
+       WTAB.'MAT_CON'='REDU' WTAB.'MAT_TOT' WTAB.'MOD_CON';             
+       WTAB.'CONVECTION'=VRAI;                                          
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' WTAB.'MOD_THE' 'MATE' 'RAYONNEMENT');                
+       WTAB.'PROCEDURE_CHAR_THER' = VRAI ;                              
+       WTAB.'RAYO'=VRAI;                                                
+       WTAB.'MOD_RAY'= 'EXTR' WTAB.'MOD_THE' 'MATE' 'RAYONNEMENT';      
+       WTAB.'MAT_RAY' ='REDU' WTAB.'MAT_TOT' WTAB.'MOD_RAY';            
+       WTAB.'RAYONNEMENT'='PRRA'  WTAB.'MOD_RAY';                       
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' WTAB.'MOD_THE' 'MATE' 'ADVECTION');                  
+       WTAB.'MOD_ADV' = 'EXTR' WTAB.'MOD_THE' 'MATE' 'ADVECTION';       
+       WTAB.'MAT_ADV'='REDU' WTAB.'MAT_TOT' WTAB.'MOD_ADV';             
+       WTAB.'ADVECTION'=VRAI;                                           
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' WTAB.'MOD_THE' 'MATE' 'CONDUCTION');                 
+       WTAB.'MOD_COND'= 'EXTR' WTAB.'MOD_THE' 'MATE' 'CONDUCTION';      
+       WTAB.'MAT_COND'= 'REDU' WTAB.'MAT_TOT' WTAB.'MOD_COND';          
+       WTAB.'CONDUCTION'=VRAI;                                          
+    'FINSI';                                                            
+   'SI' ( 'EXIS' PRECED 'BLOCAGES_THERMIQUES' );                        
+      WTAB. 'BLOCAGES_THERMIQUES'=PRECED. 'BLOCAGES_THERMIQUES';        
+   'FINSI';                                                             
+'SINON' ;                                                               
+  'SI' ('EXISTE' MO 'FORM' 'THERMOHYDRIQUE');                           
+    'SI'('EXIS' PRECED 'CELSIUS');                                      
+      WTAB.'CELSIUS'=PRECED.'CELSIUS';                                  
+    'FINSI';                                                            
+    WTAB.'THE1' = FAUX;                                                 
+    WTAB.'THM1' = VRAI;                                                 
+    WTAB.'PROCEDURE_THERMIQUE'='NONLINEAIRE';                           
+    WTAB.'MOD_THM' = 'EXTR' MO 'FORM' 'THERMOHYDRIQUE';                 
+    WTAB.'MAT_THM' = 'REDU' MA WTAB.'MOD_THM';                          
+    WTAB.'MOD_T'   = WTAB.'MOD_THM' ;                                   
+    WTAB.'MAT_T'   = WTAB.'MAT_THM' ;                                   
+    WTAB.'MOD_TOT' = WTAB.'MOD_T' ;                                     
+    WTAB.'MAT_TOT' = WTAB.'MAT_T' ;                                     
+    WTAB.'PHASE' = FAUX ;                                               
+    'SI' ('EXISTE' MO 'MATE' 'CONVECTION');                             
+      WTAB.'MOD_CON' = 'EXTR' MO 'MATE' 'CONVECTION';                   
+      WTAB.'MAT_CON'='REDU' MA WTAB.'MOD_CON';                          
+      WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_CON';              
+      WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_CON';              
+      WTAB.'CONVECTION' = VRAI;                                         
+    'FINSI';                                                            
+    'SI' ('EXISTE' MO 'MATE' 'RAYONNEMENT');                            
+      WTAB.'PROCEDURE_CHAR_THER' = VRAI ;                               
+      WTAB.'RAYO'=VRAI;                                                 
+      WTAB.'MOD_RAY'= 'EXTR'  MO 'MATE' 'RAYONNEMENT';                  
+      WTAB.'MAT_RAY' = 'REDU' MA WTAB.'MOD_RAY';                        
+      WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_RAY';              
+      WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_RAY';              
+    'FINSI';                                                            
+    'SI' ('EXISTE' MO 'MATE' 'CONDUCTION');                             
+      WTAB.'MOD_COND' = 'EXTR' MO 'MATE' 'CONDUCTION';                  
+      WTAB.'MAT_COND'='REDU' MA WTAB.'MOD_COND';                        
+      WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_COND';             
+      WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_COND';             
+      WTAB.'CONVECTION' = VRAI;                                         
+    'FINSI';                                                            
+    'SI' ('EXISTE' MO 'MATE' 'ADVECTION');                              
+      WTAB.'MOD_ADV' = 'EXTR' MO 'MATE' 'ADVECTION';                    
+      WTAB.'MAT_ADV'='REDU' MA WTAB.'MOD_ADV';                          
+      WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_ADV';              
+      WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_ADV';              
+      WTAB.'ADVECTION' = VRAI;                                          
+    'FINSI';                                                            
+    'SI' ( 'EXIS' PRECED 'BLOCAGES_THERMIQUES' );                       
+       WTAB. 'BLOCAGES_THERMIQUES'=PRECED. 'BLOCAGES_THERMIQUES';       
+    'FINSI';                                                            
+  'FINSI';                                                              
+'FINSI';                                                                
+WTAB . 'FOR_THER' = WTAB.'THE1' 'OU' WTAB.'THM1' ;                      
+'SI' ('EXIS' MO 'FORM' 'DIFFUSION') ;                                   
+  WTAB . 'FOR_DIFF' = VRAI ;                                            
+  WTAB . 'MOD_DIF'  = 'EXTR' MO 'FORM' 'DIFFUSION' ;                    
+  WTAB . 'MAT_DIF'  = 'REDU' MA WTAB . 'MOD_DIF' ;                      
+  WTAB . 'PROCEDURE_THERMIQUE' = 'NONLINEAIRE';                         
+  'SI' WTAB.'THE1' ;                                                    
+    WTAB.'MOD_THE' = WTAB.'MOD_THE' 'ET' WTAB.'MOD_DIF' ;               
+    WTAB.'MAT_THE' = WTAB.'MAT_THE' 'ET' WTAB.'MAT_DIF' ;               
+    WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_DIF' ;               
+    WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_DIF' ;               
+  'SINON' ;                                                             
+    WTAB.'MOD_THE' = WTAB.'MOD_DIF' ;                                   
+    WTAB.'MAT_THE' = WTAB.'MAT_DIF' ;                                   
+    'SI' WTAB.'THM1' ;                                                  
+      WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_DIF' ;             
+      WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_DIF' ;             
+    'SINON' ;                                                           
+      'SI' ('NEG' WTAB.'MOD_TOT' 'INCONNU') ;                           
+        WTAB.'MOD_TOT' = WTAB.'MOD_TOT' 'ET' WTAB.'MOD_DIF' ;           
+        WTAB.'MAT_TOT' = WTAB.'MAT_TOT' 'ET' WTAB.'MAT_DIF' ;           
+      'SINON' ;                                                         
+        WTAB.'MOD_TOT' = WTAB.'MOD_DIF' ;                               
+        WTAB.'MAT_TOT' = WTAB.'MAT_DIF' ;                               
+      'FINSI' ;                                                         
+    'FINSI' ;                                                           
+                                                                        
+  'FINSI' ;                                                             
+  'SI' ('EXIS' PRECED 'BLOCAGES_DIFFUSIONS') ;                          
+    WTAB . 'BLOCAGES_DIFFUSIONS' = PRECED .  'BLOCAGES_DIFFUSIONS';     
+  'FINSI' ;                                                             
+'FINSI' ;                                                               
+'SI' ('NEG' (WTAB.'MOD_TOT') 'INCONNU') ;                               
+  WTAB . 'PRIM_TOT' = 'EXTR' WTAB . 'MOD_TOT' 'DEPL' ;                  
+  WTAB . 'DUAL_TOT' = 'EXTR' WTAB . 'MOD_TOT' 'FORC' ;                  
+  WTAB . 'PRIM_TOT' = WTAB . 'PRIM_TOT' 'ET' ('MOTS' 'LX') ;            
+  WTAB . 'DUAL_TOT' = WTAB . 'DUAL_TOT' 'ET' ('MOTS' 'FLX') ;           
+'FINS' ;                                                                
+'SI' WTAB . 'FOR_THER' ;                                                
+  WTAB . 'PRIM_T' = 'EXTR' WTAB . 'MOD_T' 'DEPL' ;                      
+  WTAB . 'DUAL_T' = 'EXTR' WTAB . 'MOD_T' 'FORC' ;                      
+  WTAB . 'PRIM_T' = WTAB . 'PRIM_T' 'ET' ('MOTS' 'LX') ;                
+  WTAB . 'DUAL_T' = WTAB . 'DUAL_T' 'ET' ('MOTS' 'FLX') ;               
+'FINS' ;                                                                
+'SI' WTAB . 'FOR_DIFF' ;                                                
+  WTAB . 'PRIM_DIF' = 'EXTR' WTAB . 'MOD_DIF' 'DEPL' ;                  
+  WTAB . 'DUAL_DIF' = 'EXTR' WTAB . 'MOD_DIF' 'FORC' ;                  
+  WTAB . 'PRIM_DIF' = WTAB . 'PRIM_DIF' 'ET' ('MOTS' 'LX') ;            
+  WTAB . 'DUAL_DIF' = WTAB . 'DUAL_DIF' 'ET' ('MOTS' 'FLX') ;           
+'FINS' ;                                                                
+NOLIUTIL = FAUX ;                                                       
+'SI' ('EXISTE' MO 'FORM' 'MECANIQUE');                                  
+   WTAB.'MEC1'=VRAI;                                                    
+   WTAB.'MOD_MEC' = 'EXTR' MO 'FORM' 'MECANIQUE';                       
+   WTAB.'MAT_MEC' = 'REDU' MA  WTAB.'MOD_MEC';                          
+'FINSI';                                                                
+'SI' ('EXIS' MO 'FORM' 'CONTACT' ) ;                                    
+   WTAB.'CONTACT' = VRAI ;                                              
+   WTAB.'GRANDS_DEPLACEMENTS' = VRAI;                                   
+   MODCONTA='EXTR' MO  'FORM' 'CONTACT';                                
+   MATCONTA = 'REDU' MA  MODCONTA      ;                                
+   'SI'  ('EXIS'  MATCONTA 'JEU') ;                                     
+       MATJEU = 'EXCO' 'JEU' MATCONTA 'JEU' ;                           
+      WTAB . 'MAT_JEU' =  MATJEU ;                                      
+    'FINSI';                                                            
+   WTAB.'MODCONTA'=MODCONTA;                                            
+   'SI' ( ('EXIS'  MODCONTA  'MATE' 'COULOMB') 'OU'                     
+          ('EXIS'  MODCONTA  'MATE' 'FROCABLE') ) ;                     
+      WTAB.'CAFROTTE' = VRAI ;                                          
+      WTAB.'MOD_FRO' = 'EXTR' MO 'COMP' 'FROTTANT';                     
+      WTAB.'MAT_FRO'= 'REDU' MA  WTAB.'MOD_FRO' ;                       
+   'FINSI';                                                             
+'FINSI';                                                                
+'SI' ('EXISTE' MO 'FORM' 'POREUX');                                     
+   WTAB.'POR1'=VRAI;                                                    
+   WTAB.'MOD_POR' = 'EXTR' MO 'FORM' 'POREUX';                          
+   WTAB.'MAT_POR' = 'REDU' MA  WTAB.'MOD_POR';                          
+   WTAB.'MAI_POR' = 'EXTR' WTAB.'MOD_POR' 'MAIL';                       
+   WTAB.'MOT_POR' = 'MOTS' 'FP' 'FPQ' 'FTP' ;                           
+'FINSI';                                                                
+'SI' ('EXIS' MO 'FORM' 'CHARGEMENT') ;                                  
+  WTAB.'MOD_CHA' = 'EXTR' MO 'FORM' 'CHARGEMENT' ;                      
+  WTAB.'MAT_CHA' = 'REDU' MA WTAB.'MOD_CHA' ;                           
+  'SI' ('EXIS' WTAB.'MOD_CHA' 'MATE' 'PRESSION') ;                      
+    WTAB.'MOD_PRE' = 'EXTR' (WTAB.'MOD_CHA') 'COMP' 'PRESSION' ;        
+    MATZ = 'REDU' MA WTAB.'MOD_PRE' ;                                   
+    'SI' ('NEG' ('DIME' ('EXTR' MATZ 'COMP')) 0) ;                      
+      WTAB.'MAT_PRE' = MATZ ;                                           
+    'FINSI' ;                                                           
+    'SI' ('NON' ('EXIS' (WTAB.'CHARGEMENT') 'PRES')) ;                  
+      'ERREUR' 'Il manque la donnee d un chargement de pression';       
+      'ERREUR' '-> voir la notice de l operateur CHAR';                 
+    'SINON' ;                                                           
+       NBMOP = ('DIME' ('EXTR' WTAB.'MOD_PRE' 'ZONE')) / 2 ;            
+       NBCHA = 'DIME' ('EXTR' WTAB.'CHARGEMENT' 'PRES') ;               
+    'FINSI' ;                                                           
+  'FINSI' ;                                                             
+'FINSI' ;                                                               
+                                                                        
+WTAB . 'FOR_MECA' = WTAB . 'MEC1' 'OU' WTAB . 'POR1' 'OU'               
+                    ('EXIS' WTAB 'MOD_CHA') ;                           
+'SI'                                                                    
+  ('NON' (WTAB.'FOR_MECA' 'OU' WTAB.'FOR_THER' 'OU' WTAB.'FOR_DIFF')) ; 
+   'ERREUR' 'Le modele ne correspond a aucune formulation valable';     
+'FINSI';                                                                
+'SI' ('EXISTE' MO 'FORM' 'LIAISON');                                    
+   WTAB.'MOD_LIA' = 'EXTR' MO 'FORM' 'LIAISON' ;                        
+   WTAB.'MAT_LIA' = 'REDU' MA WTAB.'MOD_LIA' ;                          
+'FINSI' ;                                                               
+'SI' WTAB.'FOR_THER';                                                   
+  'SI'  WTAB.'FOR_MECA' ;                                               
+     WTAB.'COUPLAGE' = VRAI;                                            
+    'SI' ('NON' ('EXIS' PRECED 'PROJECTION'));                          
+       WTAB.'PROJECTION' = FAUX;                                        
+    'SINON';                                                            
+       WTAB.'PROJECTION'=PRECED.'PROJECTION';                           
+    'FINSI';                                                            
+  'SINON';                                                              
+     WTAB.'PAS_AJUSTE'=FAUX;                                            
+  'FINSI';                                                              
+'FINSI';                                                                
+                                                                        
+ WTAB.'CHAR_THE' = ('EXISTE' (WTAB.'CHARGEMENT') 'T');                  
+                                                                        
+'SI' ('EXISTE' (WTAB.'CHARGEMENT') 'DEFI');                             
+   WTAB.'CHAR_DEFI' = VRAI;                                             
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' WTAB 'MOD_PRE');                                         
+   WTAB.'CHAR_PRES' = VRAI;                                             
+'FINSI';                                                                
+                                                                        
+'SI' (  'EXISTE' PRECED 'DYNAMIQUE') ;                                  
+   WTAB.'DYNAMIQUE' = PRECED.'DYNAMIQUE';                               
+                                                                        
+  'SI' ('EXISTE' PRECED 'AMORTISSEMENT' );                              
+     WTAB.'AMORTISSEMENT' = 'EXTR' PRECED.'AMORTISSEMENT' 'RIGI' 'NOMU';
+  'FINSI';                                                              
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'LIAISON_PERSISTANTE' ) ;                        
+   WTAB.'LIAISON_PERSISTANTE' = PRECED.'LIAISON_PERSISTANTE';           
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' PRECED 'CONSOLIDATION')  ;                               
+    WTAB.'CONSOLIDATION' =  PRECED.'CONSOLIDATION'  ;                   
+'FINSI';                                                                
+'SI' WTAB.'POR1';                                                       
+   'SI' (WTAB.'CONSOLIDATION');                                         
+       'SI' ('NON' ('EXISTE' PRECED 'PERMEABILITE'));                   
+          'ERREUR' 'Il faut donner la matrice de permeabilite';         
+        'SINON';                                                        
+           WTAB.'PERMEABILITE'=PRECED.'PERMEABILITE';                   
+       'FINSI';                                                         
+       'SI' (  'EXISTE' PRECED 'TETA' ) ;                               
+          WTAB.'TETA' = PRECED.'TETA';                                  
+       'FINSI';                                                         
+       'SI' ( WTAB.'DYNAMIQUE' );                                       
+          'ERREUR' ' On ne peut pas etre en dynamique.' ;               
+       'FINSI';                                                         
+   'FINSI';                                                             
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'CONVERGENCE_FORCEE');                           
+   WTAB.'CONVERGENCE_FORCEE'= PRECED.'CONVERGENCE_FORCEE';              
+'SINON';                                                                
+    'SI' ( 'NON'  WTAB.'AUTOMATIQUE');                                  
+        WTAB.'CONVERGENCE_FORCEE' = VRAI;                               
+    'FINSI';                                                            
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'PREDICTEUR');                                   
+   WTAB.'PREDICTEUR'= 'MOT' PRECED.'PREDICTEUR';                        
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'STABILITE');                                    
+ 'SI' ('EGA' PRECED.'STABILITE' VRAI);                                  
+   WTAB.'STABILITE'= VRAI;                                              
+ 'SINON';                                                               
+   WTAB.'STABILITE'= FAUX;                                              
+ 'FINSI';                                                               
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'LINESEARCH');                                   
+ 'SI' ('EGA' PRECED.'LINESEARCH' VRAI);                                 
+   WTAB.'LINESEARCH'= VRAI;                                             
+   WTAB.'GRANDS_DEPLACEMENTS' = VRAI;                                   
+ 'SINON';                                                               
+   WTAB.'LINESEARCH'= FAUX;                                             
+ 'FINSI';                                                               
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'INITIALISATION');                               
+   WTAB.'INITIALISATION' = PRECED.'INITIALISATION';                     
+'FINSI';                                                                
+'SI' ( 'EXISTE' PRECED 'RENORMALISATION');                              
+   WTAB.'RENORMALISATION' = PRECED.'RENORMALISATION';                   
+'FINSI';                                                                
+'SI' ( 'EXISTE' PRECED 'CONVERGENCE_MONOTONE');                         
+   WTAB.'CONVERGENCE_MONOTONE' = PRECED.'CONVERGENCE_MONOTONE';         
+'FINSI';                                                                
+                                                                        
+'SI' (WTAB.'CONVERGENCE_FORCEE' 'OU' WTAB.'RENORMALISATION');           
+    WTAB.'MAXITERATION' = 250;                                          
+   'SI' ('EXISTE' PRECED 'MAXDEFOR');                                   
+        WTAB.'MAXDEFOR'=PRECED.'MAXDEFOR' ;                             
+   'FINSI';                                                             
+   'SI' WTAB.'CONVERGENCE_FORCEE';                                      
+      'SI' ('EXISTE' PRECED 'RELAXATION_NONCONV');                      
+           WTAB.'RELAXATION_NONCONV'=PRECED.'RELAXATION_NONCONV' ;      
+      'FINSI';                                                          
+   'FINSI';                                                             
+'FINSI';                                                                
+                                                                        
+'SI'  ('EXISTE' PRECED 'CONVERGENCE_MEC_THE');                          
+   WTAB.'CONVERGENCE_MEC_THE'=PRECED.'CONVERGENCE_MEC_THE';             
+'FINSI';                                                                
+'SI' WTAB.'CONVERGENCE_MEC_THE';                                        
+   WTAB.'AUTOMATIQUE'=FAUX;                                             
+   WTAB.'CONVERGENCE_FORCEE' =FAUX;                                     
+   'SI'(WTAB.'PAS_AJUSTE');                                             
+   'ERREUR'  'Options CONVERGENCE_MEC_THE et PAS_AJUSTE incompatibles'; 
+   'FINSI';                                                             
+   'SI' ('EXISTE' PRECED 'CRITERE_COHERENCE') ;                         
+     WTAB.'CRITERE_COHERENCE'=PRECED.'CRITERE_COHERENCE' ;              
+   'SINO' ;                                                             
+     'SI' ('EXISTE' PRECED 'PRECISION') ;                               
+       WTAB.'CRITERE_COHERENCE' = PRECED.'PRECISION' ;                  
+     'SINO' ;                                                           
+       WTAB.'CRITERE_COHERENCE' = WTAB.'PRECISION' ;                    
+     'FINS' ;                                                           
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'PROCEDURE_CONV') ;                            
+      WTAB.'PROCEDURE_CONV'=PRECED.'PROCEDURE_CONV' ;                   
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'NB_BOTH');                                    
+     WTAB.'BOU_METH'=PRECED.'NB_BOTH';                                  
+   'SINON';                                                             
+     WTAB.'BOU_METH'=10;                                                
+   'FINSI';                                                             
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' PRECED 'PROCEDURE_REAC_MECA');                           
+    WTAB.'PROCEDURE_REAC_MECA'=PRECED.'PROCEDURE_REAC_MECA' ;           
+'FINSI' ;                                                               
+'SI' ('EXISTE' PRECED 'PROCEDURE_REAC_THER');                           
+    WTAB.'PROCEDURE_REAC_THER' =PRECED.'PROCEDURE_REAC_THER' ;          
+'FINSI' ;                                                               
+                                                                        
+'SI' ( 'EXISTE' PRECED 'MAXSOUSPAS');                                   
+   WTAB.'MAXSOUSPAS' = PRECED.'MAXSOUSPAS' ;                            
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXISTE' PRECED 'MAXITERATION') ;                                
+   WTAB. 'MAXITERATION' = PRECED.'MAXITERATION';                        
+'SINON';                                                                
+   'SI'  WTAB.'AUTOMATIQUE' ;WTAB.'MAXITERATION' = 250;'FINSI';         
+   'SI' WTAB.'PAS_AJUSTE' ;  WTAB.'MAXITERATION'=250;'FINSI';           
+'FINSI';                                                                
+                                                                        
+'SI' ('EXIS' PRECED 'SOUS-INCREMENT' );                                 
+      WTAB.'SOUS-INCREMENT'=PRECED.'SOUS-INCREMENT';                    
+'FINSI';                                                                
+                                                                        
+'SI' ('EXIS' PRECED 'BLOCAGES_MECANIQUES');                             
+    WTAB.'BLOCAGES_MECANIQUES'= PRECED.'BLOCAGES_MECANIQUES';           
+'SINON';                                                                
+    WTAB.'BLOCAGES_MECANIQUES'= 'VIDE' 'RIGIDITE'/'RIGIDITE';           
+'FINSI';                                                                
+                                                                        
+'SI' ('EXIS' PRECED 'REAC_GRANDS');                                     
+  'SI' ('EGA' ('TYPE' PRECED . 'REAC_GRANDS') 'FLOTTANT') ;             
+     WTAB.'REAC_GRANDS' = PRECED.'REAC_GRANDS';                         
+  'FINSI';                                                              
+'FINSI';                                                                
+                                                                        
+                                                                        
+'SI' ( 'EXISTE' PRECED 'TEMPS_SAUVES' );                                
+   WTAB.'IPRESU'=PRECED.'TEMPS_SAUVES';                                 
+'SINON';                                                                
+   WTAB.'IPRESU'= WTAB.'TEMPS_CALCULES';                                
+'FINSI';                                                                
+WTAB.'IPTIME'= WTAB.'TEMPS_CALCULES';                                   
+'SI' ( 'EXISTE' PRECED 'TEMPS_SAUVEGARDES');                            
+   WTAB.'ISAUVEGL'=VRAI; WTAB.'ISAUVEGA'=PRECED.'TEMPS_SAUVEGARDES';    
+'FINSI';                                                                
+'SI' ( 'EXISTE' PRECED 'ECONOMIQUE');                                   
+    WTAB.'LECONOMI'=PRECED. 'ECONOMIQUE';                               
+'FINSI';                                                                
+                                                                        
+'SI' ( 'EXIS' PRECED 'MES_SAUVEGARDES');                                
+    TABSAUV = PRECED .'MES_SAUVEGARDES';                                
+    WTAB.'TABSAUV' = TABSAUV ;                                          
+   'SI' ('NON' ( 'EXIS' TABSAUV 'DEFIN'));                              
+      WTAB.'TABSAUV'.'DEFIN' = FAUX;                                    
+   'FINSI';                                                             
+   'SI' ('NON' ( 'EXIS' TABSAUV 'DEFTO'));                              
+      WTAB.'TABSAUV'.'DEFTO' = FAUX;                                    
+   'FINSI';                                                             
+'SINON';                                                                
+    WTAB.'TABSAUV'=TABLE ;                                              
+    WTAB.'TABSAUV'.'DEFIN' = FAUX;                                      
+    WTAB.'TABSAUV'.'DEFTO' = FAUX;                                      
+'FINSI';                                                                
+LOGERR1= 'DANS' 'QUEL' wtab.'IPRESU' wtab.'IPTIME';LOGERR2=VRAI;        
+'SI' WTAB.'ISAUVEGL';                                                   
+   LOGERR2= 'DANS' 'QUEL' WTAB.'ISAUVEGA' wtab.'IPTIME';                
+'FINSI';                                                                
+'SI' ('NON' ( LOGERR1 'ET' LOGERR2));                                   
+  'ERRE' 1013;                                                          
+'FINSI';                                                                
+                                                                        
+'SI' ('EXISTE' PRECED 'PRECISION') ;                                    
+  WTAB.'PRECISION' = PRECED.'PRECISION' ;                               
+'FINS' ;                                                                
+'SI' ('EXISTE' PRECED 'PROCEDURE_PERSO1');                              
+   WTAB.'PROCEDURE_PERSO1'=PRECED.'PROCEDURE_PERSO1';                   
+'FINSI';                                                                
+'SI' ('EXISTE' PRECED 'PROCEDURE_PERSO2');                              
+   WTAB.'PROCEDURE_PERSO2'=PRECED.'PROCEDURE_PERSO2';                   
+'FINSI';                                                                
+                                                                        
+                                                                        
+                                                                        
+'SI' WTAB.'FOR_THER' ;                                                  
+  'SI'  WTAB.'RAYO' ;                                                   
+      'SI' ('NON' ('EXISTE' (PRECED.'CARACTERISTIQUES') 'EMIS'));       
+         'ERREUR' ' Il manque la donnee des facteurs d emissivite';     
+      'FINSI';                                                          
+      'SI'('EXISTE' PRECED 'CTE_STEFAN_BOLTZMANN') ;                    
+        WTAB.'CTE_STEFAN_BOLTZMANN'=PRECED.'CTE_STEFAN_BOLTZMANN';      
+        'SAUT' 1 'LIGN' ;                                               
+        'MESS' 'ATTENTION ! Constante de Stefan-Boltzmann en unites SI';
+        'MESS' '            soit ' (WTAB . 'CTE_STEFAN_BOLTZMANN') ;    
+      'FINSI' ;                                                         
+   'FINSI';                                                             
+   'SI'  WTAB.'PHASE';                                                  
+      'SI' ('NON' ('EXISTE' (PRECED.'CARACTERISTIQUES') 'QLAT'));       
+         'ERREUR' 'Il manque la donnee de la chaleur latente QLAT';     
+      'FINSI';                                                          
+      'SI' ('NON' ('EXISTE' (PRECED.'CARACTERISTIQUES') 'TPHA'));       
+         'ERREUR' 'Il manque la donnee de la temperature TPHA';         
+      'FINSI';                                                          
+   'FINSI';                                                             
+   'SI' ('EXIS'  PRECED  'RELAXATION_THETA' );                          
+        WTAB. 'RELAXATION_THETA'=PRECED. 'RELAXATION_THETA' ;           
+   'FINSI';                                                             
+   'SI' ('EXIS'  PRECED  'RELAXATION_DUPONT');                          
+       WTAB.'RELAXATION_DUPONT'=  PRECED . 'RELAXATION_DUPONT' ;        
+   'FINSI';                                                             
+'FINSI';                                                                
+                                                                        
+                                                                        
+                                                                        
+'SI' WTAB.'FOR_DIFF' ;                                                  
+   'SI' ('EXIS'  PRECED  'RELAXATION_THETA' );                          
+        WTAB. 'RELAXATION_THETA'=PRECED. 'RELAXATION_THETA' ;           
+   'FINSI';                                                             
+'FINSI';                                                                
+                                                                        
+                                                                        
+                                                                        
+'SI' WTAB.'FOR_MECA' ;                                                  
+   'SI' ('EXISTE' PRECED 'PRECISION') ;                                 
+      WTAB.'PRECFLEX'  = PRECED.'PRECISION' ;                           
+   'FINSI';                                                             
+   'SI' ('EXISTE' PRECED 'PRECFLEX') ;                                  
+      WTAB.'PRECFLEX' = PRECED.'PRECFLEX';                              
+   'FINSI';                                                             
+   'SI' ('EXISTE' PRECED 'PRECDECHARGE') ;                              
+      WTAB.'PRECDECHARGE' = PRECED.'PRECDECHARGE' ;                     
+   'FINSI';                                                             
+                                                                        
+   'SI' (  'EXISTE' PRECED 'K_TANGENT');                                
+      WTAB.'K_TANGENT' = PRECED.'K_TANGENT';                            
+   'FINSI';                                                             
+   'SI' ('EXISTE' PRECED 'K_TANGENT_PERT') ;                            
+      WTAB.'K_TANGENT_PERT' = PRECED.'K_TANGENT_PERT' ;                 
+      'SI' WTAB.'K_TANGENT_PERT' ;                                      
+         WTAB.'K_TANGENT' = VRAI ;                                      
+      'FINSI' ;                                                         
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'K_TANG_PERT_C1') ;                            
+      WTAB.'K_TANG_PERT_C1' = PRECED.'K_TANG_PERT_C1' ;                 
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'K_TANG_PERT_C2') ;                            
+      WTAB.'K_TANG_PERT_C2' = PRECED.'K_TANG_PERT_C2' ;                 
+   'FINSI' ;                                                            
+   'SI' ('EGA' WTAB.'K_TANG_PERT_C2' 'INCONNU') ;                       
+      WTAB.'K_TANG_PERT_C2' = WTAB.'K_TANG_PERT_C1' / 1.D+02 ;          
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'K_TANGENT_ITER0') ;                           
+      WTAB.'K_TANGENT_ITER0' = PRECED.'K_TANGENT_ITER0' ;               
+   'FINSI' ;                                                            
+   'SI' ('EXISTE' PRECED 'K_TANGENT_SYME') ;                            
+      WTAB.'K_TANGENT_SYME' = PRECED.'K_TANGENT_SYME' ;                 
+   'FINSI' ;                                                            
+   'SI' (  'EXISTE' PRECED 'NITER_KTANGENT');                           
+      WTAB.'NITER_KTANGENT' =PRECED.'NITER_KTANGENT' ;                  
+   'FINSI';                                                             
+   'SI' (  'EXISTE' PRECED 'SUBSTEPPING');                              
+      WTAB.'SUBSTEPPING'=PRECED.'SUBSTEPPING' ;                         
+   'FINSI';                                                             
+   'SI' (  'EXISTE' PRECED 'PRECISINTER');                              
+      WTAB.'PRECISINTER' = PRECED.'PRECISINTER';                        
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'NITERINTER_MAX');                            
+      WTAB.'NITERINTER_MAX' =PRECED.'NITERINTER_MAX';                   
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED  'NMAXSUBSTEPS');                             
+      WTAB.'NMAXSUBSTEPS'=PRECED.'NMAXSUBSTEPS';                        
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'GRANDS_DEPLACEMENTS' );                      
+      'SI' (WTAB.'CONTACT' et (non PRECED.'GRANDS_DEPLACEMENTS'));      
+        MESS 'Un calcul avec un modele de CONTACT doit necessairement'  
+        MESS 'etre realise en GRANDS_DEPLACEMENTS !';                   
+        MESS 'Arret de pasapas'; ERRE 21;                               
+      'FINSI';                                                          
+      WTAB.'GRANDS_DEPLACEMENTS' = PRECED.'GRANDS_DEPLACEMENTS';        
+      'SI'  (WTAB.'GRANDS_DEPLACEMENTS');                               
+        WTAB.'K_SIGMA'=VRAI;                                            
+        'SI' ('NON' ('EXIS' PRECED 'MES_SAUVEGARDES'));                 
+          WTAB.'TABSAUV'.'DEFTO'= VRAI ;                                
+        'FINS' ;                                                        
+      'FINSI';                                                          
+   'FINSI';                                                             
+   'SI' (  'EXISTE' PRECED 'K_SIGMA');                                  
+      WTAB.'K_SIGMA' = PRECED.'K_SIGMA';                                
+   'FINSI';                                                             
+   'SI' (  'EXISTE' PRECED 'LAGRANGIEN');                               
+     'SI' ('EGA' preced.'LAGRANGIEN' 'TOTAL');                          
+      WTAB.'LAG_TOT' = VRAI;                                            
+     'SINON';                                                           
+       'SI' ('EGA' preced.'LAGRANGIEN' 'REACTUALISE');                  
+         WTAB.'LAG_TOT' = FAUX;                                         
+       'SINON';                                                         
+      ERRE 'Seules les valeurs TOTAL et REACTUALISE sont permises';     
+       'FINSI';                                                         
+     'FINSI';                                                           
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'MAN' );                                      
+      WTAB.'MAN'= PRECED.'MAN';                                         
+   'SINON';                                                             
+     WTAB.'MAN'=FAUX;                                                   
+   'FINSI';                                                             
+   'SI' (WTAB.'MEC1' 'ET' WTAB.'POR1') ;                                
+     MO_TOT = WTAB.'MOD_MEC' 'ET' WTAB.'MOD_POR';                       
+   'SINON';                                                             
+     'SI' WTAB.'MEC1';                                                  
+        MO_TOT = WTAB.'MOD_MEC';                                        
+     'FINSI';                                                           
+     'SI' WTAB.'POR1';                                                  
+        MO_TOT = WTAB.'MOD_POR';                                        
+     'FINSI';                                                           
+   'FINSI';                                                             
+                                                                        
+   'SI' ('EXISTE' WTAB 'MOD_LIA') ;                                     
+       MO_TOT = MO_TOT 'ET' WTAB.'MOD_LIA';                             
+   'FINSI' ;                                                            
+                                                                        
+                                                                        
+   'SI' ('EXIS' PRECED 'TEMPERATURE_REFERENCE') ;                       
+      WTAB.'TEMPERATURE_REFERENCE' = PRECED.'TEMPERATURE_REFERENCE' ;   
+   'SINO';                                                              
+     'SI' ('EGA' (WTAB.'TEMPERATURE_REFERENCE') 'INCONNU') ;            
+       'SI' ('EXIS' PRECED 'TEMPERATURES');                             
+          WTAB.'TEMPERATURE_REFERENCE' = PRECED.'TEMPERATURES'. 0 ;     
+       'SINO' ;                                                         
+         'SI' WTAB.'COUPLAGE' ;                                         
+            WTAB.'TEMPERATURE_REFERENCE'= 'ZERO' MO_TOT 'TEMPERATURES' ;
+         'SINO' ;                                                       
+           'SI' ('EXIS' (WTAB.'CHARGEMENT') 'T');                       
+              WTAB.'TEMPERATURE_REFERENCE' = 'TIRE' WTAB.'CHARGEMENT'   
+                                                     'T' WTAB.'TEMPS0' ;
+           'FINS' ;                                                     
+         'FINS' ;                                                       
+       'FINS' ;                                                         
+     'FINS' ;                                                           
+   'FINS' ;                                                             
+                                                                        
+   'SI' ('EXIS' PRECED 'TALPHA_REFERENCE');                             
+      WTAB.'TALPHA_REFERENCE' = PRECED.'TALPHA_REFERENCE';              
+   'SINON';                                                             
+      WTAB.'TALPHA_REFERENCE' = 0.D0 ;                                  
+   'FINS';                                                              
+                                                                        
+                                                                        
+   'SI' ('EXISTE' MO_TOT 'MATE' 'PLASTIQUE');                           
+      WTAB.'PLASTIQUE'      = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+   'SI' ('EXISTE' MO_TOT 'MATE' 'PLASTIQUE_ENDOM');                     
+      WTAB.'PLASTIQUE'      = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+      WTAB.'ENDOMMAGEMENT'  = VRAI;                                     
+   'FINSI';                                                             
+   'SI' (('EXISTE' MO_TOT 'MATE' 'VISCOPLASTIQUE') 'OU'                 
+         ('EXISTE' MO_TOT 'MATE' 'FLUAGE'        ));                    
+      WTAB.'VISCOPLASTIQUE' = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+   'SI' ('EXISTE' MO_TOT 'MATE' 'VISCODOMMAGE');                        
+      WTAB.'VISCODOMMAGE'   = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+   'SI' (('EXISTE' MO_TOT 'MATE' 'ENDOMMAGEMENT') 'OU'                  
+        ('EXISTE' MO_TOT 'MATE' 'ENDOMMAGEABLE'));                      
+      WTAB.'ENDOMMAGEMENT'  = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+   'SI' ('EXISTE' MO_TOT 'MATE' 'NON_LINEAIRE') ;                       
+      WTAB.'NON_LINEAIRE'   = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+      NOLIUTIL = 'EXISTE' MO_TOT 'MATE' 'UTILISATEUR' ;                 
+   'FINSI';                                                             
+   'SI' ('EXISTE' MO_TOT 'MATE' 'VISCO_EXTERNE') ;                      
+      WTAB.'VISCO_EXTERNE'  = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+  'SI' ('EXISTE' MO_TOT 'MATE' 'CERAMIQUE');                            
+      WTAB.'CERAMIQUE'      = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+   'FINSI';                                                             
+   'SI' (('EXISTE' MO_TOT 'MATE' 'MODAL') 'OU'                          
+             ('EXISTE' MO_TOT 'MATE' 'STATIQUE' ));                     
+      WTAB.'MODAL'          = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+  'FINSI';                                                              
+   'SI' ('EXISTE' MO_TOT 'MATE' 'IMPEDANCE');                           
+      WTAB.'IMPEDANCE'      = VRAI;                                     
+      WTAB.'IPLAVI'         = VRAI;                                     
+  'FINSI';                                                              
+                                                                        
+   WTAB.'MO_TOT'      = MO_TOT                    ;                     
+   WTAB.'MOD_REF'     = MO_TOT                    ;                     
+   WTAB.'MO_TOT_PREC' = MO_TOT                    ;                     
+   MAI_TOT            ='EXTR' MO_TOT 'MAIL'       ;                     
+   WTAB.'MA_TOT'      ='REDU' MA MO_TOT           ;                     
+   WTAB.'LDEVA'       ='EXTR' WTAB.'MA_TOT' 'DEVA';                     
+   WTAB.'LPAR0'       ='EXTR' MO_TOT 'PARA'       ;                     
+  'SI' ('NEG' 0 ('DIME'  WTAB.'LPAR0'))     ;                           
+     WTAB.'PARA_EXTE'=VRAI;                                             
+  'FINSI';                                                              
+                                                                        
+   'SI' (  'EXISTE' PRECED 'FEFP_FORMULATION'  );                       
+      WTAB.'FEFP_FORMULATION' = PRECED.'FEFP_FORMULATION';              
+   'FINSI';                                                             
+   'SI' WTAB.'FEFP_FORMULATION';                                        
+      'MESS' ' *** FORMULACION FeFp ***' ;                              
+      WTAB.'GRANDS_DEPLACEMENTS'  = FAUX ;                              
+      WTAB.'K_SIGMA'              = VRAI ;                              
+      WTAB.'K_TANGENT'            = VRAI ;                              
+      WTAB.'SUBSTEPPING'          = FAUX ;                              
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'UPDATE_LAGRANGIAN'  );                       
+      WTAB.'UPDATE_LAGRANGIAN' = PRECED.'UPDATE_LAGRANGIAN' ;           
+   'FINSI';                                                             
+   'SI' WTAB.'UPDATE_LAGRANGIAN';                                       
+      'MESS' ' *** UPDATE LAGRANGIAN ***' ;                             
+   'FINSI';                                                             
+   'SI' ( 'EXISTE'  PRECED 'AUTORESU');                                 
+      WTAB.'NAURES' = PRECED . 'AUTORESU';                              
+   'FINSI';                                                             
+   'SI'  WTAB . 'AUTOMATIQUE' ;                                         
+       'SI' (  'EXISTE' PRECED 'AUTOCRIT');                             
+           WTAB.'AUTOCRIT'= PRECED.'AUTOCRIT';                          
+       'FINSI';                                                         
+       'SI' ( 'EXISTE' PRECED 'AUTOPAS');                               
+           WTAB.'AUTOPAS'= PRECED.'AUTOPAS';                            
+       'FINSI';                                                         
+       WTAB.'DELTAITER'=WTAB.'MAXITERATION';                            
+    'FINSI';                                                            
+   'SI' (  'EXISTE' PRECED 'MOVA');                                     
+      WTAB.'MOVA' =PRECED.'MOVA';                                       
+   'SINON';                                                             
+    'SI'( WTAB.'VISCO_EXTERNE'  'OU' NOLIUTIL);                         
+         WTAB.MOVA = 'MOT' 'RIEN';                                      
+    'FINSI';                                                            
+     'SI' ('NON' ('EXISTE' ('EXTR' WTAB.'MO_TOTAL' 'VARI') 'EPSE'));    
+         WTAB.'MOVA' = 'MOT' 'RIEN';                                    
+     'FINSI'  ;                                                         
+                                                                        
+   'FINSI';                                                             
+  'SI' ( 'EXISTE' PRECED 'ORDRE');                                      
+       WTAB.'ORDRE'=PRECED.'ORDRE';                                     
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'RIGIDITE_CONSTANTE');                        
+       WTAB.'RAIDCONST' =VRAI;                                          
+       WTAB.'RIGIDITE_CONSTANTE'=PRECED.'RIGIDITE_CONSTANTE';           
+       RR= PRECED.'RIGIDITE_CONSTANTE';                                 
+       MNOMU = ('EXTR' RR 'MAILLAGE' 'NOMU') 'NBNO';                    
+       MAVMU = ('EXTR' RR 'MAILLAGE' ) 'NBNO';                          
+       'SI' ( MNOMU 'NEG' MAVMU) ;                                      
+           'ERREUR'                                                     
+        'Il ne faut pas de multiplicateur dans RIGIDITE_CONSTANTE';     
+       'FINSI';                                                         
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'RIGIDITE_AUGMENTEE');                        
+       WTAB.'RAIDAUGM' =VRAI;                                           
+       WTAB.'RIGIDITE_AUGMENTEE'=PRECED.'RIGIDITE_AUGMENTEE';           
+       RR= PRECED.'RIGIDITE_AUGMENTEE';                                 
+       MNOMU = ('EXTR' RR 'MAILLAGE' 'NOMU') 'NBNO';                    
+       MAVMU = ('EXTR' RR 'MAILLAGE' ) 'NBNO';                          
+       'SI' ( MNOMU 'NEG' MAVMU) ;                                      
+           'ERREUR'                                                     
+        'Il ne faut pas de multiplicateur dans RIGIDITE_AUGMENTEE';     
+       'FINSI';                                                         
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'MASSE_CONSTANTE');                           
+       WTAB.'MASSE_CONSTANTE'=PRECED.'MASSE_CONSTANTE';                 
+       WTAB.'MASSCONST'=VRAI;                                           
+   'FINSI';                                                             
+   'SI' ( 'EXISTE' PRECED 'SOUS_INCREMENT');                            
+     LOGERR = FAUX ;                                                    
+     'SI' ('EXIS' WTAB 'DYNAMIQUE') ;                                   
+       'SI' WTAB.'DYNAMIQUE' ;                                          
+       WTAB.'SOUS_INCREMENT'=PRECED.'SOUS_INCREMENT';                   
+       'SINON' ;                                                        
+         LOGERR = VRAI ;                                                
+       'FINSI' ;                                                        
+     'SINON' ;                                                          
+       LOGERR = VRAI ;                                                  
+     'FINSI' ;                                                          
+     'SI' LOGERR ;                                                      
+       'MESS' ' Option SOUS_INCREMENT utilisable QUE en DYNAMIQUE ';    
+       'MESS' ' Arret de Cast3M';                                       
+       'ERREUR' 5 ;                                                     
+     'FINSI' ;                                                          
+   'FINSI';                                                             
+   'SI'  ('EXISTE' PRECED 'NON_LOCAL'  );                               
+          WTAB.'NLOC' = VRAI ;                                          
+          WTAB.'NON_LOCAL' = PRECED.'NON_LOCAL';                        
+   'FINSI';                                                             
+   'SI' WTAB.'NLOC' ;                                                   
+      'SI' (('NEG' WTAB.'NON_LOCAL' 'MOYE') 'ET'                        
+            ('NEG' WTAB.'NON_LOCAL' 'SB'  )) ;                          
+        'ERREUR' 'Methode NON LOCALE non implementee ' WTAB.'NON_LOCAL';
+      'FINSI' ;                                                         
+      'SI' ( 'EXISTE'  PRECED 'CONN' );                                 
+          'MESS' 'On garde les connectivites dans TAB CONN';            
+          WTAB.'CONN'=PRECED . 'CONN' ;                                 
+      'SINON';                                                          
+          'SI' ( 'EXISTE'  PRECED 'LCAR' );                             
+             'MESS' 'Calcul des connectivites en mode normal.';         
+             WTAB.CONN='CONN' MO_TOT PRECED.LCAR 'NORMAL';              
+          'SINON';                                                      
+             'ERREUR' 'Il faut donner LCAR ou CONN en NON_LOCAL';       
+          'FINSI';                                                      
+      'FINSI';                                                          
+      'SI'( 'NON' ('EXISTE' PRECED 'LVIAM'));                           
+ 'ERREUR' 'Il faut donner la liste des variables internes a moyenner';  
+      'SINON';                                                          
+        WTAB.'LVIAM'= PRECED.'LVIAM';                                   
+      'FINSI';                                                          
+      'SI' ('EGA' WTAB.'NON_LOCAL' 'SB  ') ;                            
+        'SI' ('NON' ('EXISTE' PRECED 'NLOC_SB_MODL')) ;                 
+          'ERREUR' 'Il faut donner le modele a regulariser' ;           
+        'FINS' ;                                                        
+        'SI' ('NON' ('EXISTE' PRECED 'NLOC_SB_FT')) ;                   
+ 'ERREUR' 'Il faut donner la contrainte limite en traction pour normer';
+        'FINS' ;                                                        
+        WTAB.'NLOC_SB_MODL' = PRECED.'NLOC_SB_MODL' ;                   
+        MOD_SB = WTAB.'NLOC_SB_MODL' ;                                  
+        CHM_1 = 'MANU' 'CHML' MOD_SB 'LONG' 1.0 'STRESSES' ;            
+        CHM_L = 'INTG' 'ELEM' MOD_SB CHM_1 'LONG' ;                     
+        CHM_L = 'CHAN' 'COMP' 'LONG' CHM_L ;                            
+        CHM_L = 'CHAN' 'STRESSES' MOD_SB CHM_L ;                        
+        TAIL1 = CHM_L ** (1. / ('VALE' 'DIME')) ;                       
+        FTCH  = PRECED.'NLOC_SB_FT' ;                                   
+        'SI' (('EGA' ('TYPE' FTCH) 'FLOTTANT') 'OU'                     
+              ('EGA' ('TYPE' FTCH) 'ENTIER  ')) ;                       
+          FTCH = 'MANU' 'CHML' MOD_SB 'FT  ' FTCH 'STRESSES' ;          
+        'SINON' ;                                                       
+          'SI' ('NEG' ('TYPE' FTCH) 'MCHAML  ') ;                       
+            'ERREUR' 'Indice NLOC_SB_FT de type incorrect' ;            
+          'FINS' ;                                                      
+          FTCH  = 'CHAN' 'COMP' 'FT  ' ('REDU' MOD_SB FTCH) ;           
+        'FINSI' ;                                                       
+        WTAB.'NLOC_SB_REGU' = FTCH '+' TAIL1;                           
+        WTAB.'NLOC_SB_CCS' = 'MOTS' 'EPTI' 'SI11' 'SI22' 'SI33'         
+                                    'COX1' 'COY1' 'COZ1'                
+                                    'COX2' 'COY2' 'COZ2'                
+                                    'COX3' 'COY3' 'COZ3'                
+                                    'FT  ' 'LONG' ;                     
+      'FINS' ;                                                          
+   'FINSI';                                                             
+   'SI' WTAB.'GRANDS_DEPLACEMENTS' ;                                    
+       MOCA = 'MOTS' 'VECT' 'VX  ' 'VY  ' 'VZ  ' 'VXF ' 'VYF ' 'VZF '   
+                     'V1X ' 'V1Y ' 'V1Z ' 'V2X ' 'V2Y ' 'V2Z ';         
+       'REPETER' BOU_CAR ('DIME' MOCA);                                 
+          ITE2 = &BOU_CAR;                                              
+          MOT1 = 'EXTR' MOCA ITE2;                                      
+          'SI' ('EXIS' WTAB.'MA_TOT' MOT1);                             
+             WTAB.'ITCAR' = VRAI;                                       
+             'QUITTER' BOU_CAR;                                         
+          'FINSI';                                                      
+       'FIN' BOU_CAR;                                                   
+   'FINSI';                                                             
+   'SI'( WTAB.'GRANDS_DEPLACEMENTS' 'OU'  WTAB.'FEFP_FORMULATION');     
+       WTAB.'RECALCUL'= VRAI ;                                          
+   'FINSI';                                                             
+   'SI' ('EXIS'  MO_TOT  'MATE' 'MISTRAL');                             
+     'SI' ('NON' ('EXISTE' (WTAB.'CHARGEMENT') 'FI  ')) ;               
+      FIZER='MANU' 'CHPO' MAI_TOT 1 'FI  ' 0. 'NATURE' 'DIFFUS' ;       
+      WTAB.'CHARGEMENT'= WTAB.'CHARGEMENT' 'ET' ('CHAR' 'FI' FIZER      
+      ('EVOL' 'MANU'  ('PROG' 0. 10.e10 ) ('PROG' 1. 1.)));             
+     'FINSI';                                                           
+   'FINSI';                                                             
+   'SI' (('EXIS'  MO_TOT  'MATE' 'UO2') 'OU'                            
+         ('EXIS'  MO_TOT  'MATE' 'GATT_MONERIE') ) ;                    
+      'SI' ('NON' ('EXISTE' (WTAB.'CHARGEMENT') 'DFIS')) ;              
+     DFISZER='MANU' 'CHPO'  MAI_TOT 1 'DFIS' 0. 'NATURE' 'DIFFUS' ;     
+      WTAB.'CHARGEMENT'= WTAB.'CHARGEMENT' 'ET' ('CHAR' 'DFIS' DFISZER  
+         ('EVOL' 'MANU'   ('PROG' 0. 10.e10 ) ('PROG' 1. 1.))) ;        
+     'FINSI';                                                           
+   'FINSI';                                                             
+'FINSI';                                                                
+WTAB.'CHARGEMENT_I'=WTAB.'CHARGEMENT';                                  
+                                                                        
+                                                                        
+'SAUTER' 1 'LIGNE';                                                     
+'SI' WTAB.'FOR_MECA' ;                                                  
+   'SI' WTAB.'FOR_THER';                                                
+       'MESS'  'Couplage THERMIQUE-MECANIQUE ';                         
+   'SINON'   ;                                                          
+       'MESS'   'Calcul MECANIQUE';                                     
+   'FINSI';                                                             
+                                                                        
+   'SI' ('NEG' WTAB.'PREDICTEUR' 'INCONNU');                            
+       'MESS'   ' *** Predicteur: ' wtab.'PREDICTEUR';                  
+   'FINSI';                                                             
+   'SI' WTAB.'K_SIGMA';                                                 
+       'MESS'   ' *** K_SIGMA *** ';                                    
+   'FINSI';                                                             
+   'SI' WTAB.'LAG_TOT';                                                 
+       'MESS'   ' *** Calcul en lagrangien total *** ';                 
+   'SINON';                                                             
+       'MESS'   ' *** Calcul en lagrangien reactualise *** ';           
+   'FINSI';                                                             
+   'SI' WTAB.'STABILITE';                                               
+       'MESS'   ' *** Verification stabilite *** ';                     
+   'FINSI';                                                             
+   'SI' WTAB.'LINESEARCH';                                              
+       'MESS'   ' *** Linesearch  *** ';                                
+   'FINSI';                                                             
+   'SI' (non WTAB.'INITIALISATION');                                    
+       'MESS'   ' *** Initialisation a partir du pas precedent'         
+                ' interdite *** ';                                      
+   'FINSI';                                                             
+   'SI' (WTAB.'CONVERGENCE_MONOTONE');                                  
+       'MESS'   ' *** Convergence monotone imposee *** ';               
+   'FINSI';                                                             
+   'SI' (WTAB.'RENORMALISATION');                                       
+       'MESS'   ' *** Renormalisation des iteres *** ';                 
+   'FINSI';                                                             
+   'SI' WTAB.'POR1';                                                    
+      'MESS' ' *** POREUX ***';                                         
+   'FINSI';                                                             
+   'SI'(WTAB.'DYNAMIQUE');                                              
+      'MESSAGE' ' *** DYNAMIQUE PAS A PAS ***';                         
+   'FINSI' ;                                                            
+   'SI' (WTAB.'FREQUENTIEL') ;                                          
+      'MESSAGE' ' *** FREQUENTIEL PAS A PAS ***' ;                      
+   'FINSI' ;                                                            
+   'SI'(WTAB.'LIAISON_PERSISTANTE');                                    
+      'MESSAGE' ' *** LIAISON PERSISTANTE ***';                         
+   'FINSI' ;                                                            
+   'SI'(WTAB.'CONSOLIDATION');                                          
+      'MESSAGE' ' *** CONSOLIDATION ***';                               
+   'FINSI' ;                                                            
+   'SI'(WTAB.'PLASTIQUE');                                              
+     'MESSAGE' ' *** PLASTICITE ***';                                   
+   'FINSI';                                                             
+   'SI'(WTAB.'VISCOPLASTIQUE');                                         
+      'MESSAGE' ' *** VISCO - PLASTICITE ***';                          
+   'FINSI' ;                                                            
+   'SI' WTAB.'NON_LINEAIRE';                                            
+      'SI' NOLIUTIL;                                                    
+         'MESS' ' *** MODELE DE COMPORTEMENT NON LINEAIRE EXTERNE ***'; 
+      'SINON';                                                          
+         'MESS' ' *** ELASTICITE NON_LINEAIRE ***';                     
+      'FINSI';                                                          
+   'FINSI' ;                                                            
+   'SI' WTAB.'VISCO_EXTERNE';                                           
+      'MESSAGE' ' *** VISCO - PLASTICITE, MODELE EXTERNE ***';          
+   'FINSI' ;                                                            
+   'SI' WTAB.'CHAR_THE';                                                
+      'MESSAGE' ' *** CHARGEMENT THERMIQUE ***';                        
+   'FINSI';                                                             
+   'SI' WTAB.'CHAR_DEFI';                                               
+      'MESSAGE' ' *** CHARGEMENT PAR DES DEFORMATIONS ***';             
+   'FINSI';                                                             
+   'SI' WTAB.'CHAR_PRES';                                               
+      'MESSAGE' ' *** CHARGEMENT PAR UNE PRESSION SUIVEUSE ***';        
+   'FINSI';                                                             
+   'SI' WTAB.'PARA_EXTE';                                               
+      'MESSAGE' ' *** LE MODELE DEPEND DE PARAMETRES EXTERNES ***';     
+   'FINSI';                                                             
+   'SI'(WTAB.'GRANDS_DEPLACEMENTS');                                    
+      'MESSAGE' ' *** GRANDS DEPLACEMENTS ***';                         
+   'FINSI';                                                             
+   'SI'(WTAB.'CONVERGENCE_FORCEE');                                     
+      'MESSAGE' ' *** CONVERGENCE FORCEE   ***';                        
+   'FINSI';                                                             
+   'SI'(WTAB.'ENDOMMAGEMENT');                                          
+      'MESSAGE' ' *** PLASTICITE + ENDOMMAGEMENT ***';                  
+   'FINSI';                                                             
+   'SI'(WTAB.'VISCODOMMAGE');                                           
+      'MESSAGE' ' *** VISCO-PLASTICITE + ENDOMMAGEMENT ***';            
+   'FINSI';                                                             
+   'SI'(WTAB.'CERAMIQUE');                                              
+      'MESSAGE' ' ***CERAMIQUE FLUAGE  + ENDOMMAGEMENT ***';            
+      'MESSAGE' ' ***             +OTTOSEN             ***';            
+   'FINSI';                                                             
+   'SI' WTAB.'NLOC' ;                                                   
+      'SI' ('EGA' WTAB.'NON_LOCAL' 'SB') ;                              
+         'MESS' ' *** EN NON-LOCAL BASE SUR ETAT DE CONTRAINTE *** ' ;  
+      'SINO' ;                                                          
+         'MESS' ' *** EN NON-LOCAL *** ' ;                              
+      'FINSI';                                                          
+   'FINSI';                                                             
+   'SI' WTAB.'CONTACT';                                                 
+      'MESS' ' *** CONTACT ***';                                        
+   'FINSI';                                                             
+   'SI' (WTAB.'SOUS_INCREMENT' > 1);                                    
+      'MESS'  ' *** SOUS_INCREMENT : ' WTAB.SOUS_INCREMENT;             
+   'FINSI';                                                             
+   'SI' WTAB.'CAFROTTE';                                                
+      'MESS' ' *** FROTTEMENT ***';                                     
+   'FINSI';                                                             
+   'SI' WTAB.'K_TANGENT' ;                                              
+     'SI' WTAB.'K_TANGENT_PERT' ;                                       
+       'MESS' ' *** MATRICE TANGENTE PAR PERTURBATION ***' ;            
+     'SINON' ;                                                          
+       'MESS' ' *** MATRICE TANGENTE (COHERENTE) ***' ;                 
+     'FINSI' ;                                                          
+     'MESS' '     MATRICE EVALUEE TOUTES LES' WTAB.'NITER_KTANGENT'     
+            'ITERATIONS' ;                                              
+     'SI' WTAB.'K_TANGENT_SYME' ;                                       
+       'MESS' '     PARTIE SYMETRIQUE DE LA MATRICE TANGENTE UTILISEE'; 
+     'FINSI' ;                                                          
+   'FINSI';                                                             
+   'SI' WTAB.'SUBSTEPPING';                                             
+     'MESSAGE' ' *** SUBSTEPPING *** NUM_MAXI_SUBSTEPS = '              
+               WTAB.'NMAXSUBSTEPS' ;                                    
+     'MESSAGE' ' *** SUBSTEPPING *** NUM_ITER_INTERNAS = '              
+               WTAB.'NITERINTER_MAX' ;                                  
+   'FINSI';                                                             
+'SINON';                                                                
+   'MESS' 'Calcul  THERMIQUE ';                                         
+'FINSI';                                                                
+                                                                        
+NBPART = 'VALEUR' 'ASSI' ;                                              
+WTAB.'NBPART' = NBPART ;                                                
+b_PARA = 0 ;                                                            
+'SI' ('EGA' 'INCONNU' WTAB.'PROCESSEURS') ;                             
+  'SI' (NBPART > 1);                                                    
+    toutmo = 'EXTR' PRECED.'MODELE' 'ZONE' ;                            
+    IMOD = ('DIME' toutmo) / 2 ;                                        
+    MINELE = 1000000 ; MAXELE = 0 ;                                     
+    'REPE' BOUCMO IMOD ;                                                
+      BBB = 'NBEL' TOUTMO . (&BOUCMO * 2);                              
+      'SI' (MINELE > BBB); MINELE = BBB; 'FINSI';                       
+      'SI' (MAXELE < BBB); MAXELE = BBB; 'FINSI';                       
+    'FIN' BOUCMO ;                                                      
+    MINELE=MINELE/NBPART ; MAXELE=MAXELE/NBPART;                        
+    NBELMIN = 1000 ; NBELMM=100 ;                                       
+    'SI' (MINELE > NBELMIN) ;                                           
+      b_PARA = 2 ;                                                      
+    'SINON';                                                            
+      'SI'( (MINELE > NBELMM) 'OU' (MAXELE > 500) ) ;                   
+        b_PARA = 1 ;                                                    
+      'FINSI';                                                          
+    'FINSI';                                                            
+  'FINSI';                                                              
+'SINON' ;                                                               
+  'SI' ('>' NBPART 1) ;                                                 
+    'SI' ('EGA' WTAB.'PROCESSEURS' 'COMPORTEMENT');                     
+      b_PARA = 1 ;                                                      
+    'SINON' ;                                                           
+      'SI' ('EGA' WTAB.'PROCESSEURS' 'AUTOMATIQUE');                    
+        b_PARA = 2 ;                                                    
+      'FINSI';                                                          
+    'FINSI';                                                            
+  'FINSI';                                                              
+'FINSI';                                                                
+'SAUTER' 1 'LIGNE';                                                     
+'SI' ('EGA' b_PARA 0) ;                                                 
+  WTAB.'PROCESSEURS' = 'MOT' 'MONO_PROCESSEUR' ;                        
+  'MESS' ' *** Pas de parallelisation ***' ;                            
+'SINON' ;                                                               
+  'SI' ('EGA' b_PARA 1) ;                                               
+    'MESS' ' *** Parallelisation du comportement ***';                  
+    WTAB.'PROCESSEURS' = 'MOT' 'COMPORTEMENT' ;                         
+  'SINON' ;                                                             
+    'SI' ('EGA' b_PARA 2) ;                                             
+      WTAB.'PROCESSEURS' = 'MOT' 'AUTOMATIQUE' ;                        
+      'MESS' ' *** Parallelisation automatique ***' ;                   
+    'SINON' ;                                                           
+      'MESS' ' *** Cas // non prevu' ; 'ERREUR' 5 ;                     
+    'FINSI' ;                                                           
+  'FINSI' ;                                                             
+'FINSI' ;                                                               
+                                                                        
+'SAUTER' 1 'LIGNE';                                                     
+'FINPROC' ;                                                             

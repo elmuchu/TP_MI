@@ -1,0 +1,43 @@
+opti trac open;
+
+*placer unv dans le repertoire d'execution (Temp)
+TAB1 = LIRE 'UNV' 'p.unv' ; 
+
+vol1  = TAB1.'PhysicalVolume102' ;
+surf1 = TAB1.'PhysicalSurface103' ;
+surf2 = TAB1.'PhysicalSurface104' ;
+
+trac cach (20 -50 150) vol1;
+
+mo1 = mode vol1 mecanique elastique;
+ma1 = mate mo1 youn 210000 nu 0.3;
+
+bl1 = bloq depla rota surf1;
+
+ri1 = rigi mo1 ma1;
+rit1 = ri1 et bl1;
+
+FOR1 = FORCER FY -350 surf2;
+FOR2 = FORCER FZ 200 surf2;
+FOR3 = FORCER FX 600 surf2;
+FORT = FOR1 ET FOR2 ET FOR3;
+
+de1 = RESO rit1 FORT;
+
+
+def0= defo vol1 de1 0;
+def1= defo vol1 de1 10 roug;
+trac cach (def0 et def1);
+
+si1 = sigm de1 mo1 ma1;
+SSVV = VMIS MO1 si1;
+
+trac (10 -8 30) mo1 def1 ssvv ;
+
+OPTI SORT 'p-resu_castem'; 
+SORT 'VTK' vol1 'MAILLAGE' 
+           de1 'DEPLACEMENT'           si1 'CONTRAINTE' ;
+
+fin;
+
+

@@ -1,0 +1,128 @@
+*
+* DEBUT DU FICHIER
+*
+* Barrage triangulaire sous pression en déformation plane
+*
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+
+TITR 'BARRAGE' ;  
+OPTI DIME 2 MODE PLAN DEFO ELEM TRI6; 
+*OPTI ECHO 0;         
+***************************************
+* PARAMETRISATION, DONNEES
+***************************************
+
+* DIMENSIONS
+* ----------
+
+HAUT        = 10.       ;
+LARG        = 2.5*HAUT  ;
+
+* PARAMETRES DE MAILLAGE
+* ----------------------
+
+NH       = 20;
+NL       = ENTI((LARG*NH)/HAUT);
+
+* COEFFICIENTS
+* ------------
+
+MODYOUNG = 2.E11;
+COEFPOIS = 0.3;
+RHOEAU   = 1.;
+GRAVITE  = 9.81;
+
+
+***************************************
+* GEOMETRIE ET MAILLAGE
+***************************************
+
+* POINTS
+* ------
+
+P1   = 0. (-1*HAUT);
+P2   = LARG (-1*HAUT);
+P3   = 0 0 ;
+
+* LIGNES
+* ------
+
+P1P2 = P1 D NL P2 ;
+P2P3 = P2 D NL P3 ;
+P3P1 = P3 D NH P1 ;
+
+* SURFACE
+* -------
+
+LTOT1 = P1P2 ET P2P3 ET P3P1 ;
+SURF1 = SURF PLAN LTOT1              ;
+
+TRAC QUAL SURF1;
+
+***************************************
+* MODELE ET MATERIAU
+***************************************
+
+MOD1 = MODE SURF1 MECANIQUE ELASTIQUE ISOTROPE;
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS;
+
+***************************************
+* CONDITIONS AUX LIMITES ET CHARGEMENT
+***************************************
+
+* CL
+* --
+
+CL1 = BLOQ DEPLA ROTA P1P2;
+
+* CHARGEMENT
+* ----------
+
+FOTOT = PRES MASS MOD1 P3P1 1.;
+CHPY  = COOR 2 P3P1; COMM recuperation des Y de la ligne ;
+CHP1  = -1*RHOEAU*GRAVITE*CHPY; COMM la fonction a piloter; 
+
+FORT =FOTOT*CHP1;
+
+VEC1 = VECT FORT 5.E-2 FX FY ROUG;
+TRAC VEC1 CACH SURF1;     
+
+
+* MATRICE DE RIGIDITE
+* -------------------
+*
+RIG1 = RIGI MOD1 MAT1;
+RIG1 = RIG1 ET CL1;
+
+***************************************
+* RESOLUTION
+***************************************
+
+DEPL1 = RESO RIG1 FORT;
+
+***************************************
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION DE LA DEFORMEE
+* ----------------------------
+
+DEF0 = DEFO SURF1 DEPL1 0. BLAN;
+DEF1 = DEFO SURF1 DEPL1 BLEU;
+TRAC (DEF0 ET DEF1) CACH;
+
+* VISUALISATION DE CONTRAINTES 
+* ----------------------------
+
+SS   = SIGM MOD1 MAT1 DEPL1;
+
+SSXY = EXCO SMXY SS;
+TRAC DEF1 MOD1 SSXY;
+
+
+****************************************
+*FIN DU FICHIER
+****************************************
+
+FIN ;

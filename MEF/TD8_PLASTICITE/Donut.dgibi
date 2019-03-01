@@ -1,0 +1,267 @@
+*
+* DEBUT DU FICHIER DONUTONJUPITER.DGIBI
+*
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+* 
+***************************************************************** 
+
+TITR 'DONUT ET SAUCISSE' ;
+OPTI DIME 3 ELEM CU20;
+*OPTI ECHO 0;
+
+GRAPH='Y'; COMM si GRAPH est different de N alors on voit les traces ;
+
+BOOLPLA='N'; COMM si BOOLPLA est Y alors le calcul se fait en
+plasticite avec ecrouissage cinematique sinon en elasticite;
+
+
+***************************************
+* PARAMETRISATION, DONNEES
+***************************************
+
+OEILZ = 0. 0. 1000. ;
+OEILD = 20. 20. 20. ;
+
+* DIMENSIONS
+* ----------
+H        = 3.0  ;   COMM Hauteur totale du Donut ;
+EPD      = 0.25 ;   COMM Demi epaisseur du Donut ;
+
+* PARAMETRES DE MAILLAGE
+* ----------------------
+NC1      =  5;    COMM Nbno sur petit cercle du Donut ;
+NC2      = 30;    COMM Nbno sur grand cercle du Donut ;
+NC3      =  5;    COMM Nbno sur demi-grand cercle Saucisse ;
+
+* ELASTICITE
+* ----------
+MODYOUNG = 2.E11;
+COEFPOIS = 0.3;
+MASSVOLU = 7800; COMM Masse volumique;
+
+* PLASTICITE
+* ----------
+SIG1  = 5.E06;
+ECROU = 50.E06;
+
+***************************************
+* GEOMETRIE ET MAILLAGE
+***************************************
+
+* POINTS
+* ------
+P0 = 0. 0. 0. ;
+P1 = 0. (H/2.) 0.; COMM Centre cercle Donut ;
+P2 = 0. ((H)-EPD) 0.; P3 = P2 PLUS (0. EPD 0.); 
+P4 = P2 PLUS (0. 0. EPD);
+P5 = P2 PLUS (0. ((-1.)*EPD) 0.);
+P6 = P2 PLUS (0. 0. (-1.*EPD));
+P7 = P1 PLUS (0. (2.*H) 0.) ; COMM Centre cercle Saucisse ;
+
+* CERCLES
+* -------
+C1  = CERC NC1 P5 P2 P6 ; C2  = CERC NC1 P6 P2 P3 ;
+C3  = CERC NC1 P3 P2 P4 ; C4  = CERC NC1 P4 P2 P5 ;
+CD  = C1 ET C2 ET C3 ET C4 ; COMM Cercle generique Donut ; 
+
+* SURFACE
+* -------
+SURF1 = SURF PLAN CD ;
+SURF2 = SURF1 PLUS (0. (2.*EPD) 0.) ;
+
+* VOLUME
+* ------
+VOL1  = SURF1 VOLU NC2 ROTA 360 P1 (P1 PLUS (0. 0. 1.)) COUL ROUG;
+VOL2 = SURF2 VOLU NC3 ROTA 20 P7 (P7 PLUS (0. 0. 1.)) ;
+VOL2b = SURF2 VOLU NC3 ROTA -20 P7 (P7 PLUS (0. 0. 1.)) ;
+VOL2 = VOL2 et VOL2b;
+VOLT = VOL1 ET VOL2 ;
+ELIM 0.01 VOLT ; COMM On elimine les noeuds double ;
+
+SI(NEG GRAPH 'N');
+   TRAC OEILZ QUAL VOLT CACH;
+   TRAC OEILD QUAL VOLT CACH;
+FINSI;
+OPTI DONN 5;
+
+
+**********************************************************************
+* DEBUT DU CAS ELASTIQUE
+**********************************************************************
+SI(NEG BOOLPLA 'Y');
+
+
+* MODELE ET MATERIAU
+***************************************
+
+MOD1 = MODE VOLT MECANIQUE ELASTIQUE ISOTROPE;
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS RHO MASSVOLU;
+
+* CONDITIONS AUX LIMITES ET CHARGEMENT
+***************************************
+
+* CL
+* --
+PB = (0. 0. 10.); PC = (10. 0. 10.);
+GEO1 = VOLT POIN PLAN P0 PB PC 0.1 COUL VERT ;
+CL1 = BLOQ DEPLA ROTA GEO1;
+CLT = CL1;
+
+TRAC OEILZ (VOLT ET GEO1) CACH ;
+
+* CHARGEMENT
+* ----------
+MAS1 = MASSE MOD1 MAT1;
+CHP1 = MANU CHPO VOLT 1 UY (-2.5*9.81);
+CHARG1 = MAS1*CHP1;
+FORT = CHARG1;
+
+VEC1 = VECT CHARG1 3.E-3 FX FY FZ ROUG;
+SI(NEG GRAPH 'N');
+   TRAC OEILZ VEC1 VOLT CACH;
+FINSI;
+
+
+* MATRICE DE RIGIDITE
+* -------------------
+RIG1 = RIGI MOD1 MAT1;
+RIG1 = RIG1 ET CLT;
+
+
+* RESOLUTION
+***************************************
+
+DEPL1 = RESO RIG1 FORT;
+
+
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION DEFORMEE
+* ----------------------
+DEF0 = DEFO VOLT DEPL1 0. BLAN;
+DEF1 = DEFO VOLT DEPL1 BLEU;
+SI(NEG GRAPH 'N');
+   TRAC OEILZ (DEF0 ET DEF1) CACH;
+FINSI;
+
+
+* VISUALISATION CONTRAINTES
+* -------------------------
+SS   = SIGM MOD1 MAT1 DEPL1;
+SSVV = VMIS MOD1 SS;
+SI(NEG GRAPH 'N');
+   TRAC (10 -5  20)  DEF1 MOD1 SSVV;
+FINSI;
+
+
+* PLUS GRAND VMIS
+* ---------------
+MESS '---->      VMIS MAX SUR VOLT =' (MAXI SSVV) ;
+OPTI DONN 5;
+
+
+
+**********************************************************************
+* FIN DU CAS ELASTIQUE
+**********************************************************************
+
+
+SINON ;
+
+
+**********************************************************************
+* DEBUT DU CAS PLASTIQUE
+**********************************************************************
+
+
+
+* MODELE ET MATERIAU
+***************************************
+
+MOD1 = MODE VOLT MECANIQUE ELASTIQUE ISOTROPE PLASTIQUE CINEMATIQUE;
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS RHO MASSVOLU 'SIGY' SIG1 
+'H' ECROU ;
+
+
+* CONDITIONS AUX LIMITES ET CHARGEMENT
+***************************************
+
+* CL
+* --
+PB = (0. 0. 10.); PC = (10. 0. 10.);
+GEO1 = VOLT POIN PLAN P0 PB PC 0.1 COUL VERT ;
+CL1 = BLOQ DEPLA ROTA GEO1;
+CLT = CL1;
+
+TRAC OEILZ (VOLT ET GEO1) CACH ;
+
+* CHARGEMENT
+* ----------
+MAS1 = MASSE MOD1 MAT1;
+CHP1 = MANU CHPO VOLT 1 UY (-2.5*9.81);
+CHARG1 = MAS1*CHP1;
+FORT = CHARG1;
+
+NSUB = 10.;
+LIST1=PROG 0. PAS (1./NSUB) 1.;
+EVF1=EVOL 'MANU' 'TEMPS' LIST1 'MULT1' LIST1;
+CHA1=CHAR FORT EVF1;
+
+
+* RESOLUTION
+* -------------------
+TAB1=TABLE;
+TAB1.'BLOCAGES_MECANIQUES'=CLT;
+TAB1.'PRECISION'=1.e-3;
+TAB1.'MODELE'=MOD1;
+TAB1.'CHARGEMENT'=(CHA1);
+TAB1.'CARACTERISTIQUES'=MAT1;
+TAB1.'TEMPS_CALCULES'=LIST1;
+TAB1.'TEMPS_SAUVES' = LIST1;
+TAB1.'GRANDS_DEPLACEMENTS'=FAUX;
+TAB1.'GRANDES_ROTATIONS'=FAUX;
+TAB1.'GRANDES_DEFORMATIONS'=FAUX;
+TAB1.'CONVERGENCE_FORCEE' = FAUX;
+PASAPAS TAB1;
+
+
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION DEFORMEE ANIMATION
+* --------------------------------
+SI(NEG GRAPH 'N');
+@CARTOON TAB1 VOLT OEILZ ;
+FINSI;
+
+
+* VISUALISATION CONTRAINTES
+* -------------------------
+
+I2 = 0;
+REPETER BB1 (TAB1.PAS) ;
+  I2 = I2 + 1 ;
+  DEF1 = DEFO VOLT (TAB1.'DEPLACEMENTS'.(I2)) 2.E3 BLAN;
+  SS = TAB1.CONTRAINTES.(I2);
+  SSVV = VMIS MOD1 SS;
+  LISOV = Prog 0. 1.E6 2.E6 3.E6 4.E6 5.E6 6.E6 ;
+     SI(NEG GRAPH 'N');
+        TRAC OEILZ LISOV MOD1 DEF1 SSVV;
+    FINSI;
+FIN BB1;
+
+
+**********************************************************************
+* FIN DU CAS PLASTIQUE
+**********************************************************************
+
+FINSI;
+
+OPTI DONN 5;
+
+****************************************
+*FIN DU FICHIER
+****************************************
+FIN ;

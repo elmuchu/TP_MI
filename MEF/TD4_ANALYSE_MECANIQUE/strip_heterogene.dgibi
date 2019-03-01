@@ -1,0 +1,166 @@
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+************************************************
+TITR 'STRIP' ;
+OPTI DIME 2 MODE PLAN DEFO ELEM QUA8;
+*OPTI ECHO 0;
+
+************************************************
+* parametrisation
+************************************************
+
+* dimensions
+* -----------
+
+H        = 0.1 ;
+L        = 2.0 ;
+
+* maillage
+* --------
+
+NH       = 14 ; COMM un chiffre pair > 2 ;
+NL       = ENTI((NH/H)*L) ;
+
+* materiaux elastiques lineaires
+* ------------------------------
+
+YO1   = 5.00E+11;
+PO1   = 0.25;
+YO2   = YO1/10;
+PO2   = PO1;
+
+MU1     = YO1/(2*(1+PO1));
+LAMBDA1 = YO1*PO1/(1+PO1)/(1-(2*PO1));
+
+* chargement
+* ----------
+
+PY       = 6.E2;
+
+************************************************
+* geometrie et maillage
+************************************************
+
+BOOLSERI = 'Y'; 
+
+SI(NEG BOOLSERI 'N');   COMM maillage serie;
+
+   MESS '-------------------------------------------------------';
+   P1   = 0. 0. ;          P2   = 0. (H/(NH-1))  ;
+   P3   = L  (H/(NH-1))  ; P4   = L  0. ;
+
+   P1P2 = P1 DROI 1 P2 ; P2P3 = P2 DROI NL P3 ;
+   P3P4 = P3 DROI 1 P4 ; P4P1 = P4 DROI NL P1 ;
+
+   S0 = DALL P1P2 P2P3 P3P4 P4P1 PLAN ;
+
+   VTRANS = (0. (H/(NH-1))); S1 = S0; S2 = S0 PLUS VTRANS; SPROV = S2;
+
+   REPE BB1 ((NH-2)/2) ;
+      SPROV = SPROV PLUS VTRANS ; S1 = S1 ET SPROV COUL VERT ;
+      SPROV = SPROV PLUS VTRANS ; S2 = S2 ET SPROV COUL ROUG ;
+   FIN BB1;
+
+SINON  ;                COMM maillage parallele;
+
+   P1   = 0. 0. ;          P2   = 0. H  ;
+   P3   = (L/(NL-1))  H  ; P4   = (L/(NL-1))  0. ;
+
+   P1P2 = P1 DROI NH P2 ; P2P3 = P2 DROI 1 P3 ;
+   P3P4 = P3 DROI NH P4 ; P4P1 = P4 DROI 1 P1 ;
+
+   S0 = DALL P1P2 P2P3 P3P4 P4P1 PLAN ;
+
+   VTRANS = ((L/(NL-1)) 0.); S1 = S0; S2 = S0 PLUS VTRANS; SPROV = S2;
+
+   REPE BB2 (ENTI((NL-2)/2)) ;
+      SPROV = SPROV PLUS VTRANS ; S1 = S1 ET SPROV COUL VERT ;
+      SPROV = SPROV PLUS VTRANS ; S2 = S2 ET SPROV COUL ROUG ;
+   FIN BB2;
+
+FINSI;
+
+STOT = S1 ET S2;
+ELIM 1E-6 STOT;
+
+TRAC QUAL STOT; 
+
+************************************************
+* modele et materiau
+************************************************
+MOD1 = MODE S1 MECANIQUE ELASTIQUE ISOTROPE ;
+MAT1 = MATE MOD1 YOUN YO1 NU PO1;
+MOD2 = MODE S2 MECANIQUE ELASTIQUE ISOTROPE ;
+MAT2 = MATE MOD2 YOUN YO2 NU PO2;
+MODT = MOD1 ET MOD2; MATT = MAT1 ET MAT2;
+
+************************************************
+* conditions aux limites
+************************************************
+
+CL1 = BLOQ UX P1 ;
+CL2 = BLOQ UY (STOT POIN DROI P1 P4 1e-6) ;
+CLT = (CL1 ET CL2);
+
+************************************************
+* chargement
+************************************************
+
+SI(NEG BOOLSERI 'N');
+GEO1 = STOT POIN DROI ((0 H) PLUS VTRANS) ((L H) PLUS VTRANS) 1E-6;
+SINON;
+GEO1 = STOT POIN DROI (0 H) (L H) 1e-6;
+FINSI;
+
+FOR1 = FORCER FY PY GEO1;
+VEC1 = VECT FOR1 FX FY 3.E-2 ROUG;
+TRAC VEC1 STOT;
+
+************************************************
+* matrice de rigidite
+************************************************
+
+RIG1 = RIGI MODT MATT;
+RIG1 = RIG1 ET CLT;
+
+************************************************
+* resolution
+************************************************
+
+DEPL1 = RESO RIG1 FOR1;
+
+************************************************
+* postraitement
+************************************************
+
+* trace maillage initial et deforme
+* ---------------------------------
+
+DEF0 = DEFO STOT DEPL1 0. BLAN;
+DEF1 = DEFO STOT DEPL1 BLEU;
+TRAC (DEF0 ET DEF1);
+
+* posttraitement
+* --------------
+
+SS   = SIGM MODT MATT DEPL1;
+SSYY  = EXCO SMYY SS; SSXX  = EXCO SMXX SS; SSZZ  = EXCO SMZZ SS;
+EP = EPSI MODT DEPL1;
+EPSYY = EXCO EPYY EP; EPSXX = EXCO EPXX EP; EPSZZ = EXCO EPZZ EP;
+
+CHAM1 = MANU CHML MODT SCAL 1; VOL = INTG MODT CHAM1;
+
+SSYYMOY  = (INTG MODT SSYY)/VOL;
+SSZZMOY  = (INTG MODT SSZZ)/VOL;
+EPSYYMOY = (INTG MODT EPSYY)/VOL;
+
+MESS 'Coefficient de cisaillement apparent norme -- mu/mu1 :  ' 
+     ((SSYYMOY-SSZZMOY)/2/EPSYYMOY/MU1) ;
+
+
+************************************************
+* fin
+************************************************
+
+FIN;
+

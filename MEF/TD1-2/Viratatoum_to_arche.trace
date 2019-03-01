@@ -1,0 +1,183 @@
+*                                                                       
+* DEBUT DU FICHIER                                                      
+*        1         2         3         4         5         6         7  
+*23456789012345678901234567890123456789012345678901234567890123456789012
+                                                                        
+TITR 'ARCHE' ;                                                          
+OPTI DIME 3 ELEM CU20;                                                  
+*OPTI ECHO 0;                                                           
+                                                                        
+***************************************                                 
+* PARAMETRISATION, DONNEES                                              
+***************************************                                 
+                                                                        
+* DIMENSIONS                                                            
+* ----------                                                            
+                                                                        
+L        = 0.2  ;                                                       
+H        = 1.0  ;                                                       
+                                                                        
+* PARAMETRES DE MAILLAGE                                                
+* ----------------------                                                
+                                                                        
+NL       = 3;                                                           
+NH       = ENTI((H*NL)/L);                                              
+                                                                        
+* ELASTICITE                                                            
+* ----------                                                            
+MODYOUNG = 2.E11;                                                       
+COEFPOIS = 0.3;                                                         
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+PXY      = 100.;                                                        
+                                                                        
+* OEIL                                                                  
+* ----------                                                            
+                                                                        
+OEILX    = (100. 0. 0.);                                                
+OEILY    = (0. 100. 0.);                                                
+OEILZ    = (0. 0. 100.);                                                
+OEILD    = (100. 100. 100.);                                            
+OEILD2   = (100. 80. 70.);                                              
+                                                                        
+                                                                        
+***************************************                                 
+* GEOMETRIE ET MAILLAGE                                                 
+***************************************                                 
+                                                                        
+* POINTS                                                                
+* ------                                                                
+                                                                        
+P1   = 0. 0. 0.;                                                        
+P2   = L 0. 0.;                                                         
+P3   = L L 0.;                                                          
+P4   = 0 L 0.;                                                          
+                                                                        
+* LIGNES                                                                
+* ------                                                                
+                                                                        
+P1P2 = P1 DROI NL P2 ;                                                  
+P2P3 = P2 DROI NL P3 ;                                                  
+P3P4 = P3 DROI NL P4 ;                                                  
+P4P1 = P4 DROI NL P1 ;                                                  
+                                                                        
+* SURFACE                                                               
+* -------                                                               
+                                                                        
+SURF1 = DALL P1P2 P2P3 P3P4 P4P1 PLAN ;                                 
+                                                                        
+TRAC QUAL SURF1;                                                        
+                                                                        
+* VOLUME                                                                
+* ------                                                                
+                                                                        
+P5 = (P1 PLUS (H 0. 0.));                                               
+P6 = (P1 PLUS (H L 0.));                                                
+                                                                        
+VOL1 = SURF1 VOLU NH ROTA 90. P5 P6 ;                                   
+TRAC VOL1 ;                                                             
+                                                                        
+SURF2 = SURF1 PLUS ((2*H-L) 0. 0.);                                     
+VOL2 = SURF2 VOLU NH ROTA -90. P5 P6 ;                                  
+                                                                        
+VOLT = VOL1 ET VOL2;                                                    
+ELIM 0.0001 VOLT ;                                                      
+TRAC VOLT;                                                              
+                                                                        
+* FIN PROVISOIRE                                                        
+*FIN;                                                                   
+                                                                        
+                                                                        
+***************************************                                 
+* MODELE ET MATERIAU                                                    
+***************************************                                 
+                                                                        
+MOD1 = MODE VOLT MECANIQUE ELASTIQUE ISOTROPE;                          
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS;                             
+                                                                        
+***************************************                                 
+* CONDITIONS AUX LIMITES ET CHARGEMENT                                  
+***************************************                                 
+                                                                        
+* CL                                                                    
+* --                                                                    
+                                                                        
+CL1 = BLOQ DEPLA ROTA SURF1;                                            
+CL2 = BLOQ UZ SURF2 ;                                                   
+                                                                        
+CLT = CL1 ET CL2;                                                       
+                                                                        
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+P7 = (P5 PLUS (0. 0. H));                                               
+P8 = (P6 PLUS (0. 0. H));                                               
+                                                                        
+GEO1 = VOLT POIN DROI P7 P8 0.005 COUL VERT ;                           
+                                                                        
+FOR1 = FORCER FZ (-1*PXY) GEO1;                                         
+FORT = FOR1 ;                                                           
+                                                                        
+                                                                        
+* VISUALISATION VOLUME ET ZONES CL/CHARGEMENT                           
+                                                                        
+VEC1 = VECT FORT 1.E-2 FX FY FZ ROUG;                                   
+TRAC VEC1 CACH OEILD2 VOLT;                                             
+                                                                        
+* FIN PROVISOIRE                                                        
+*FIN;                                                                   
+                                                                        
+* MATRICE DE RIGIDITE                                                   
+* -------------------                                                   
+*                                                                       
+RIG1 = RIGI MOD1 MAT1;                                                  
+RIG1 = RIG1 ET CLT;                                                     
+                                                                        
+***************************************                                 
+* RESOLUTION                                                            
+***************************************                                 
+                                                                        
+DEPL1 = RESO RIG1 FORT;                                                 
+                                                                        
+***************************************                                 
+* POSTRAITEMENT                                                         
+***************************************                                 
+                                                                        
+* VISUALISATION DE LA DEFORMEE                                          
+* ----------------------------                                          
+                                                                        
+DEF0 = DEFO VOLT DEPL1 0. BLAN;                                         
+DEF1 = DEFO VOLT DEPL1 BLEU;                                            
+TRAC OEILY (DEF0 ET DEF1) CACH;                                         
+                                                                        
+OPTI DONN 3;                                                            
+                                                                        
+                                                                        
+* VISUALISATION DE CONTRAINTES                                          
+* ----------------------------                                          
+                                                                        
+SS   = SIGM MOD1 MAT1 DEPL1;                                            
+                                                                        
+                                                                        
+SSYY = EXCO SMYY SS;                                                    
+TRAC OEILY DEF1 MOD1 SSYY;                                              
+                                                                        
+SSXY = EXCO SMXZ SS;                                                    
+TRAC OEILY DEF1 MOD1 SSXY;                                              
+                                                                        
+SSXZ = EXCO SMZZ SS;                                                    
+TRAC OEILY DEF1 MOD1 SSXZ;                                              
+                                                                        
+SSVM = VMIS MOD1 SS;                                                    
+TRAC OEILY DEF1 MOD1 SSVM;                                              
+                                                                        
+                                                                        
+                                                                        
+****************************************                                
+*FIN DU FICHIER                                                         
+****************************************                                
+                                                                        
+FIN ;                                                                   

@@ -1,0 +1,246 @@
+*
+* DEBUT DU FICHIER
+*
+* Calcul 3D avec des elements tétrahédriques  
+*
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+
+OPTI DIME 3 ELEM CU20;
+OPTI ECHO 0;
+
+***************************************
+* PARAMETRISATION, DONNEES
+***************************************
+
+PI = 3.14159;
+
+NBSPIR = 6; COMM Nb de spires ; 
+
+* DIMENSIONS (en m)
+* ------------------
+
+DIAM1    = 0.025  ; COMM Diametre spire epaisseur ; 
+DIAM2    = 0.2    ; COMM Diametre externe spire ;
+HRESSORT = 0.4    ; COMM Hauteur ressort;
+
+LCENTRE  = 0.25   ; COMM Largeur partie centrale siege ;
+LBRAS    = 0.5    ; COMM Largeur bras siege;
+LEP      = 0.015  ; COMM Epaisseur siege;
+
+* PARAMETRES DE MAILLAGE
+* ----------------------
+
+DHELI       = 150; COMM Densite de maille par unite long pr helice;
+DSIEGE      = 40; COMM Densite de maille par unite long pr siege;
+
+* ELASTICITE
+* ----------
+YOUNGSIE = 12.E9;
+POISSSIE = 0.3;
+YOUNGHEL = 206.E9;
+POISSHEL = 0.28;
+
+* LIMITE ELASTICITE ACIER
+* -----------------------
+LIMELAS = 200.E6; COMM en Pa ;
+
+* CHARGEMENT
+* ----------
+
+PENFANT      = 35.; COMM Poids enfant en kg ;
+
+
+* OEIL
+* ----------
+
+OEILX    = (100. 0. 0.);
+OEILY    = (0. 100. 0.);
+OEILZ    = (0. 0. 100.);
+OEILD    = (100. 100. 100.);
+OEILD2   = (100. 80. 70.);
+
+
+***************************************
+* RESSORT
+***************************************
+NR1 = ENTI(DHELI*(2*PI*(DIAM1/2)));
+NR2 = ENTI((DHELI/2)*(2*PI*(DIAM2/2)));
+
+P0 = 0. 0. 0. ; P00 = ((DIAM2/2)-(DIAM1/2)) 0 0;
+P1 = (DIAM2/2) 0 0;
+P2 = P1 PLUS ((-1*DIAM1/2) 0 (1*DIAM1/2));
+P3 = P1 PLUS ((-1*DIAM1) 0 0);
+P4 = P1 PLUS ((-1*DIAM1/2) 0 (-1*DIAM1/2));
+
+C1 = CERC (ENTI(NR1/4)) P1 P00 P2;
+C2 = CERC (ENTI(NR1/4)) P2 P00 P3;
+C3 = CERC (ENTI(NR1/4)) P3 P00 P4;
+C4 = CERC (ENTI(NR1/4)) P4 P00 P1;
+CR1 = C1 ET C2 ET C3 ET C4 ;
+SURF1 = SURF PLAN CR1;
+SURF1BIS = SURF1 PLUS (0 0 (DIAM1/2));
+
+* on cree les anneaux haut et bas
+VOLBAS = VOLU SURF1BIS NR2 ROTA 360. P0 (P0 PLUS (0 0 1));
+VOLHAUT = VOLBAS PLUS (0 0 (HRESSORT-DIAM1));
+
+* on cree les spirales (procedure @helice)
+* --> FLAG : COMPLETER
+SURFHAU VOLSPI = 
+
+
+VOLHEL = (VOLSPI ET VOLBAS ET VOLHAUT) COUL ROUGE;
+ELIM (DIAM1/1500) VOLHEL;
+
+***************************************
+* SIEGE
+***************************************
+NL1 = ENTI(DSIEGE*LBRAS);
+NL2 = ENTI(NL1/2);
+NL3 = ENTI(NL1/8);
+
+P10 = 0 (LCENTRE/2) 0;
+P11 = P10 PLUS (0 0 LEP);
+P13 = 0 (-1*LCENTRE/2) 0;
+P12 = P13 PLUS (0 0 LEP);
+L1 = D NL3 P10 P11; L2 =  D NL2 P11 P12;
+L3 = D NL3 P12 P13; L4 =  D NL2 P13 P10;
+* --> FLAG : OU EST L ERREUR ?
+SURF3 = SURF PLAN (L1 L2 L3 L4);
+
+VCEN = VOLU SURF3 NL2 TRANS (LCENTRE 0 0);
+VCEN = VCEN PLUS ((-1*LCENTRE/2) 0 (HRESSORT));
+
+VBRAS1 = VOLU SURF3 NL1 TRANS (LBRAS 0 0);
+VBRAS1 = VBRAS1 PLUS ((LCENTRE/2) 0 (HRESSORT));
+VBRAS2 = VBRAS1 TOUR 90 P0 (P0 PLUS (0 0 1));
+VBRAS3 = VBRAS2 TOUR 90 P0 (P0 PLUS (0 0 1));
+VBRAS4 = VBRAS3 TOUR 90 P0 (P0 PLUS (0 0 1));
+
+VOLSIEGE = (VCEN ET VBRAS1 ET VBRAS2 ET VBRAS3 ET VBRAS4) COUL BLEU;
+ELIM (LEP/10.) VOLSIEGE ; 
+
+***************************************
+* VOLUME TOTAL
+***************************************
+
+VOLT = VOLHEL ET VOLSIEGE;
+ELIM (1e-3) VOLT ; 
+TRAC CACH VOLT;
+
+***************************************
+* MODELE ET MATERIAU
+***************************************
+
+* un modele pour le siege
+MOD1 = MODE VOLSIEGE MECANIQUE ELASTIQUE ISOTROPE;
+MAT1 = MATE MOD1 YOUN YOUNGSIE NU POISSSIE;
+* un modele pour le ressort
+MOD2 = MODE VOLHEL MECANIQUE ELASTIQUE ISOTROPE;
+MAT2 = MATE MOD2 YOUN YOUNGHEL NU POISSHEL;
+* le modele total
+* --> FLAG : A COMPLETER
+MODT = 
+MATT = 
+
+***************************************
+* CONDITIONS AUX LIMITES ET CHARGEMENT
+***************************************
+
+* CL
+* --
+
+GEOBAS = VOLT POIN PLAN P0 P1 (P1 PLUS (0 1 0)) 1e-3 COUL VERT;
+GEOBAS1 = GEOBAS POIN DROI P0 P1 1e-2 COUL VERT;
+GEOBAS2 = GEOBAS POIN DROI P0 (0 1 0) 1e-2 COUL VERT;
+GEOBAS = (GEOBAS1 ET GEOBAS2);
+
+* ux=0 uy=0 uz=0 sur geobas
+* --> FLAG : A COMPLETER
+CL1 = ;
+CLT = CL1 ;
+
+* CHARGEMENT
+* ----------
+
+VHTOT = 0 0 (HRESSORT+LEP);
+
+GEOHAUT = VOLT POIN PLAN (P0 PLUS VHTOT) (P1 PLUS VHTOT) 
+ (P1 PLUS (0 1 (HRESSORT+LEP))) 1e-3;
+GEOHAUT = GEOHAUT POIN DROI (LBRAS 0 (HRESSORT+LEP)) 
+ (LBRAS -1 (HRESSORT+LEP)) (LCENTRE/2) COUL VERT; 
+
+* --> FLAG : EXPLIQUER LA LIGNE SUIVANTE
+MYFORC = -1*PENFANT*9.81/(NBNO GEOHAUT);
+CHAR1 = FORC FZ MYFORC GEOHAUT;
+CHART = CHAR1;
+
+VEC1 = VECT CHART 1.E+1 FX FY FZ BLAN;
+TRAC VEC1 (VOLT ET GEOBAS) CACH;
+
+* MATRICE DE RIGIDITE
+* -------------------
+
+RIG1 = RIGI MODT MATT;
+RIG1 = RIG1 ET CLT;
+RIGT = RIG1;
+
+***************************************
+* RESOLUTION
+***************************************
+
+DEPLT = RESO RIGT CHART;
+
+***************************************
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION
+*--------------
+
+DEF0 = DEFO VOLT DEPLT 0. BLAN;
+DEF1 = DEFO VOLT DEPLT BLEU;
+
+TRAC (DEF0 ET DEF1) CACH;
+
+
+* VISUALISATION DE CONTRAINTES 
+* ----------------------------
+
+* sur toute la strcture
+SS   = SIGM MODT MATT DEPLT;
+SSVM = VMIS MODT SS;
+TRAC DEF1 MODT SSVM;
+
+* sur le ressort seul
+DEFHEL = DEFO VOLHEL DEPLT BLEU;
+SSHEL  = SIGM MOD2 MAT2 DEPLT;
+SSVMHEL= VMIS MOD2 SSHEL;
+TRAC DEFHEL MOD2 SSVMHEL;
+
+
+* CALCUL DE RESISTANCE
+* ---------------------
+
+* affichage de la contrainte de von mises maximale
+MESS '---->      VMIS MAX SUR VOLT =' (MAXI SSVM) ;
+
+*calcul du deplacement max du siege
+PEXTR = (LCENTRE/2+LBRAS) (LCENTRE/2+LBRAS) (HRESSORT+LEP);
+PTEST  = VOLT POIN PROC PEXTR ;
+DZ     = EXTR DEPLT UZ PTEST ;
+
+* utilisation de linearite du pb pour connaitre la contrainte
+* de von mises maxi lorsque le siege touche le sol
+VMSOL = ((MAXI SSVM)*(ABS(DZ))/HRESSORT);
+MESS '---->      VMIS MAX AU CONTACT DU SOL =' VMSOL ;
+
+* calcul du coefficient de securité
+MESS '---->      COEFFICIENT DE SECURITE =' (LIMELAS/VMSOL);
+
+****************************************
+*FIN DU FICHIER
+****************************************
+
+FIN ;

@@ -1,0 +1,156 @@
+*                                                                       
+* DEBUT DU FICHIER POUTRE_3D.DGIBI                                      
+*                                                                       
+* Calcul 3D avec des elements                                           
+* cubiques a interpolation lineaire : CUB8                              
+                                                                        
+TITR 'POUTRE MAILLEE 3D' ;                                              
+OPTI DIME 3 ELEM CUB8;                                                  
+OPTI ECHO 0;                                                            
+OPTI TRAC OPEN;                                                         
+                                                                        
+***************************************                                 
+* PARAMETRISATION, DONNEES                                              
+***************************************                                 
+                                                                        
+* DIMENSIONS                                                            
+* ----------                                                            
+                                                                        
+L        = 1.;                                                          
+B        = 0.012;                                                       
+H        = 0.1 ;                                                        
+                                                                        
+* PARAMETRES DE MAILLAGE                                                
+* ----------------------                                                
+                                                                        
+NB       = 1;                                                           
+NH       = (2*NB);                                                      
+NL       = (8*NB);                                                      
+                                                                        
+* ELASTICITE                                                            
+* ----------                                                            
+MODYOUNG = 2.E11;                                                       
+COEFPOIS = 0.;                                                          
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+PY       = -600.;                                                       
+                                                                        
+***************************************                                 
+* GEOMETRIE ET MAILLAGE                                                 
+***************************************                                 
+                                                                        
+* POINTS                                                                
+* ------                                                                
+                                                                        
+P1   = 0. (-1.*H/2.) (-1.*B/2.);                                        
+P2   = 0. (+1.*H/2.) (-1.*B/2.);                                        
+P3   = 0. (+1.*H/2.) (+1.*B/2.);                                        
+P4   = 0. (-1.*H/2.) (+1.*B/2.);                                        
+                                                                        
+P1B  = L  (-1.*H/2.) (-1.*B/2.);                                        
+P2B  = L  (+1.*H/2.) (-1.*B/2.);                                        
+P3B  = L  (+1.*H/2.) (+1.*B/2.);                                        
+P4B  = L  (-1.*H/2.) (+1.*B/2.);                                        
+                                                                        
+* LIGNES                                                                
+* ------                                                                
+                                                                        
+P1P2 = P1 DROI NH P2 ;                                                  
+P2P3 = P2 DROI NB P3 ;                                                  
+P3P4 = P3 DROI NH P4 ;                                                  
+P4P1 = P4 DROI NB P1 ;                                                  
+                                                                        
+P1BP2B  = P1B DROI NH P2B ;                                             
+P2BP3B  = P2B DROI NB P3B ;                                             
+P3BP4B  = P3B DROI NH P4B ;                                             
+P4BP1B  = P4B DROI NB P1B ;                                             
+                                                                        
+* SURFACE                                                               
+* -------                                                               
+                                                                        
+SURF1 = DALL P1P2 P2P3 P3P4 P4P1 PLAN ;                                 
+SURF2 = DALL P1BP2B P2BP3B P3BP4B P4BP1B PLAN ;                         
+                                                                        
+* VOLUME                                                                
+* ------                                                                
+                                                                        
+VOL1 = SURF1 VOLU NL SURF2 ;                                            
+                                                                        
+***************************************                                 
+* MODELE ET MATERIAU                                                    
+***************************************                                 
+                                                                        
+MOD1 = MODE VOL1 MECANIQUE ELASTIQUE ISOTROPE;                          
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS;                             
+                                                                        
+***************************************                                 
+* CONDITIONS AUX LIMITES ET CHARGEMENT                                  
+***************************************                                 
+                                                                        
+* CL                                                                    
+* --                                                                    
+                                                                        
+CL1 = BLOQ DEPLA ROTA SURF1;                                            
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+GEO1 = VOL1 POIN DROI P2B P3B 1.E-6 ;                                   
+FOR1 = FORCER FY PY GEO1;                                               
+                                                                        
+* MATRICE DE RIGIDITE                                                   
+* -------------------                                                   
+*                                                                       
+RIG1 = RIGI MOD1 MAT1;                                                  
+RIG1 = RIG1 ET CL1;                                                     
+                                                                        
+***************************************                                 
+* RESOLUTION                                                            
+***************************************                                 
+                                                                        
+DEPL1 = RESO RIG1 FOR1;                                                 
+                                                                        
+***************************************                                 
+* POSTRAITEMENT                                                         
+***************************************                                 
+                                                                        
+* NUMERIQUE / THEORIQUE                                                 
+* ---------------------                                                 
+                                                                        
+DY    = EXTR DEPL1 UY P2B ;                                             
+DY2    = EXTR DEPL1 UY P1B ;                                            
+DYABS = ABS ((DY+DY2)/2.);                                              
+                                                                        
+INERTIE = (B*(H**3))/12.;                                               
+DYTHEO  = ABS ((PY*(L**3))/(3*MODYOUNG*INERTIE));                       
+                                                                        
+MESS 'fleche maximale en metre :  ' DYABS;                              
+MESS 'fleche theorique en metre : ' DYTHEO;                             
+                                                                        
+MESS ' ';                                                               
+MESS '-------------------------------------';                           
+MESS '    ->  NUM/THEO =' (DYABS/DYTHEO);                               
+MESS ' ';                                                               
+MESS '    ->      NBNO =' (NBNO VOL1);                                  
+MESS '-------------------------------------';                           
+                                                                        
+* VISUALISATION                                                         
+* -------------                                                         
+                                                                        
+DEF0 = DEFO VOL1 DEPL1 0. BLAN;                                         
+DEF1 = DEFO VOL1 DEPL1 BLEU;                                            
+TRAC (DEF0 ET DEF1);                                                    
+OEIL1=0. 0. 1000. ;                                                     
+TRAC  OEIL1 (DEF0 ET DEF1);                                             
+                                                                        
+SS   = SIGM MOD1 MAT1 DEPL1;                                            
+SSXX = EXCO SMXX SS;                                                    
+TRAC OEIL1 DEF1 MOD1 SSXX;                                              
+                                                                        
+****************************************                                
+*FIN DU FICHIER                                                         
+****************************************                                
+                                                                        
+FIN ;                                                                   

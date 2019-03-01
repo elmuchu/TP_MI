@@ -1,0 +1,37 @@
+opti rest format 'p.sauv'; rest format;
+
+trac cach vol1;
+
+mo1 = mode vol1 mecanique elastique;
+ma1 = matr mo1 youn 210000 nu 0.3;
+
+bl1 = bloq depla rota surf1;
+
+ri1 = rigi mo1 ma1;
+rit1 = ri1 et bl1;
+
+FOR1 = FORCER FY -350 surf2;
+FOR2 = FORCER FZ 200 surf2;
+FOR3 = FORCER FX 600 surf2;
+FORT = FOR1 ET FOR2 ET FOR3;
+
+de1 = RESO rit1 FORT;
+
+
+def0= defo vol1 de1 0;
+def1= defo vol1 de1 10 roug;
+trac cach (def0 et def1);
+
+trac cach (def1);
+
+si1 = sigm de1 mo1 ma1;
+SSVV = VMIS MO1 si1;
+
+trac (10 -8 30) mo1 def1 ssvv ;
+trac (100 0 0) mo1 def1 ssvv ;
+
+opti sauv format 'p-resu_castem.sauv'; sauv format de1;
+
+fin;
+
+

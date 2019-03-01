@@ -1,0 +1,235 @@
+*
+* DEBUT DU FICHIER VIRATATOUM.DGIBI
+*
+* Calcul 3D avec des elements tétrahédriques  
+*
+*        1         2         3         4         5         6         7
+*23456789012345678901234567890123456789012345678901234567890123456789012
+
+TITR 'VIRATATOUM' ;    COMM le titre ;
+OPTI DIME 3 ELEM CU20; COMM dimension 3, elements tetrahedriques ;
+OPTI ECHO 0;          COMM pour enlever l affichage des messages ;
+OPTI TRAC OPEN;
+
+***************************************
+* PARAMETRISATION, DONNEES
+***************************************
+
+* DIMENSIONS
+* ----------
+
+L        = 0.2  ;
+H        = 1.0  ;
+
+* PARAMETRES DE MAILLAGE
+* ----------------------
+
+NL       = 3;
+NH       = ENTI((H*NL)/L);
+
+* ELASTICITE
+* ----------
+MODYOUNG = 2.E11;
+COEFPOIS = 0.3;
+
+* CHARGEMENT
+* ----------
+
+PXY      = 100.;
+
+* OEIL
+* ----------
+
+OEILX    = (100. 0. 0.);
+OEILY    = (0. 100. 0.);
+OEILZ    = (0. 0. 100.);
+OEILD    = (100. 100. 100.);
+OEILD2   = (100. 80. 70.);
+
+
+***************************************
+* GEOMETRIE ET MAILLAGE
+***************************************
+
+* POINTS
+* ------
+
+P1   = 0. 0. 0.;
+P2   = L 0. 0.;
+P3   = L L 0.;
+P4   = 0 L 0.;
+
+* LIGNES
+* ------
+
+P1P2 = P1 DROI NL P2 ;
+P2P3 = P2 DROI NL P3 ;
+P3P4 = P3 DROI NL P4 ;
+P4P1 = P4 DROI NL P1 ;
+
+* SURFACE
+* -------
+
+LTOT1 = P1P2 ET P2P3 ET P3P4 ET P4P1 ;
+SURF1 = SURF PLAN LTOT1              ;
+
+* TRAC QUAL SURF1;
+
+* VOLUME
+* ------
+
+VOL1 = SURF1 VOLU NH TRANS (0. 0. H) ;
+*VOL1 = SURF1 VOLU (NH) ROTA 180 (H 0. 0.) (H L 0.) ;
+*TRAC VOL1 ;
+*TRAC CACH VOL1 ;
+*TRAC ECLA VOL1 ;
+
+*OPTI DONN 5;
+
+VOL1BIS = VOL1 TOUR 90. (P1 PLUS (H 0. 0.)) (P1 PLUS (H L 0.));
+VOL2 = VOL1BIS PLUS ((-1.*(H-L)) 0. 0.) COUL ROUG ; 
+VOL1TER = VOL1 TOUR -90. (P1 PLUS (0. H 0.)) (P1 PLUS (L H 0.));
+VOL3 = VOL1TER PLUS (H (-1.*(H-L)) 0.) COUL BLEU;  
+
+VOLT = VOL1 ET VOL2 ET VOL3;
+ELIM (L/NL/5.) VOLT ; COMM On elimine les noeuds double ;
+*OPTI DONN 5;
+*TRAC VOLT;
+*TRAC OEILD2 CACH VOLT ;
+*OPTI DONN 3;
+
+
+* FIN PROVISOIRE
+*FIN;
+
+
+***************************************
+* MODELE ET MATERIAU
+***************************************
+
+MOD1 = MODE VOLT MECANIQUE ELASTIQUE ISOTROPE;
+*MOD1 = MODE VOL1 MECANIQUE ELASTIQUE ISOTROPE;
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS;
+
+***************************************
+* CONDITIONS AUX LIMITES ET CHARGEMENT
+***************************************
+
+* CL
+* --
+
+*P8 = H 0. 0.;
+*P9 = H L 0.;
+*P10 = (H-L) 0. 0.;
+*SURF2 = VOL1 POIN PLAN P8 P9 P10 0.005 COUL VERT;
+
+CL1 = BLOQ DEPLA ROTA SURF1;
+*CL2 = BLOQ UZ SURF2;
+*CLT = CL1 ET CL2;
+CLT = CL1;
+*TRAC VOL1;
+
+* CHARGEMENT
+* ----------
+
+* EXTRACTION D'UNE SURFACE DE VOLT A PARTIR DE
+* SON INTERSECTION AVEC UN PLAN PASSANT PAR 3 POINTS
+* ET AFFECTATION DE LA COULEUR VERTE
+
+P5 = H     (H+L) H;
+P6 = H     (H+L) (H-L);
+P7 = (H-L) (H+L) H;
+
+GEO1 = VOLT POIN PLAN P5 P6 P7 0.005 COUL VERT ;
+
+FOR1 = FORCER FY PXY GEO1;
+FOR2 = FORCER FX (-1*PXY) GEO1;
+FORT = FOR1 ET FOR2;
+
+*P11 = H 0. H;
+*P12 = H L H;
+*SURF3 = VOL1 POIN DROIT P11 P12 0.005 COUL VERT;
+
+*FOR3 = FORCER FZ (-1*PXY) SURF3;
+*FORT = FOR3;
+*VEC2 = VECT FOR3 5.E-2 FX FY FZ ROUG;
+*TRAC VEC2 CACH OEILD2 (VOL1 ET SURF3);
+
+*FIN;
+
+
+* VISUALISATION VOLUME ET ZONES CL/CHARGEMENT
+
+VEC1 = VECT FORT 5.E-2 FX FY FZ ROUG;
+*TRAC CACH (VOLT ET GEO1);
+*TRAC VEC1 CACH OEILD2 VOLT;     
+
+* FIN PROVISOIRE
+*FIN;
+
+* MATRICE DE RIGIDITE
+* -------------------
+*
+RIG1 = RIGI MOD1 MAT1;
+RIG1 = RIG1 ET CLT;
+
+***************************************
+* RESOLUTION
+***************************************
+
+DEPL1 = RESO RIG1 FORT;
+
+***************************************
+* POSTRAITEMENT
+***************************************
+
+* VISUALISATION DE LA DEFORMEE
+* ----------------------------
+
+DEF0 = DEFO VOLT DEPL1 0. BLAN;
+DEF1 = DEFO VOLT DEPL1 30E+3 BLEU;
+*TRAC (DEF0 ET DEF1) CACH;
+
+OPTI DONN 3;
+
+
+* VISUALISATION DE CONTRAINTES 
+* ----------------------------
+
+SS   = SIGM MOD1 MAT1 DEPL1;
+
+SSYY = EXCO SMYY SS;
+*TRAC OEILD DEF1 MOD1 SSYY;
+
+SSXY = EXCO SMXY SS;
+*TRAC OEILD DEF1 MOD1 SSXY;
+
+SSXZ = EXCO SMXZ SS;
+*TRAC OEILD DEF1 MOD1 SSXZ;
+
+SSVM = VMIS MOD1 SS;
+TRAC OEILZ DEF1 MOD1 SSVM;
+
+* CALCUL D'UN DEPLACEMENT 
+* ----------------------------
+
+* EXTRACTION DU MAILLAGE LE NOEUD LE PLUS PROCHE DE P5
+
+PTEST  = VOLT POIN PROC P5 ;
+DY      = EXTR DEPL1 UY PTEST ;
+DX      = EXTR DEPL1 UX PTEST ;
+DZ      = EXTR DEPL1 UZ PTEST ;
+DABS   =  ((DX*DX)+(DY*DY)+(DZ*DZ))**0.5 ;
+
+MESS ' ';
+MESS '-----------------------------------------------------';
+MESS '      NB ELEM        NB NOEUDS        DEPLACEMENT    ';
+MESS '        ' (NBEL VOL1)'         ' (NBNO VOL1) '    ' DABS ;
+MESS '-----------------------------------------------------';
+
+
+****************************************
+*FIN DU FICHIER
+****************************************
+
+FIN ;

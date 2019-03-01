@@ -1,0 +1,214 @@
+*        1         2         3         4         5         6         7  
+*23456789012345678901234567890123456789012345678901234567890123456789012
+*                                                                       
+* DEBUT DU FICHIER COMPRESSION_2D.DGIBI                                 
+*                                                                       
+* Calcul 2D d'une barre courbe en flexion                               
+*                                                                       
+*********************************************************************   
+*                                                                       
+*                     CALCUL 1                                          
+*                                                                       
+*********************************************************************   
+                                                                        
+************************************************                        
+* definition des conditions generales de calcul                         
+************************************************                        
+                                                                        
+TITR 'COMPRESSION BARRE COURBE' ;                                       
+OPTI DIME 2;                                                            
+OPTI MODE PLAN DEFO;                                                    
+OPTI ELEM QUA4;                                                         
+*OPTI ECHO 0;                                                           
+                                                                        
+************************************************                        
+* parametrisation                                                       
+************************************************                        
+                                                                        
+* dimensions                                                            
+H        = 30.E-2 ;                                                     
+R        = 2*H;                                                         
+EP       = H/20. ;                                                      
+                                                                        
+* maillage                                                              
+NH       = 15 ;                                                         
+NEP      = 4  ;                                                         
+                                                                        
+* materiau elastique lineaire                                           
+MODYOUNG = 2.E+9;                                                       
+COEFPOIS = 0.2;                                                         
+                                                                        
+* chargement                                                            
+PY       = -6.E2;                                                       
+                                                                        
+************************************************                        
+* geometrie et maillage                                                 
+************************************************                        
+                                                                        
+* points                                                                
+                                                                        
+P1   = 0. 0. ;                                                          
+P2   = 0. H  ;                                                          
+P3   = (-1*R)  (H/2) ;                                                  
+                                                                        
+* lignes                                                                
+                                                                        
+L1 = CERC NH P1 P3 P2 ;                                                 
+                                                                        
+* surfaces                                                              
+                                                                        
+S1   = L1 TRANS NEP (EP 0.) ;                                           
+                                                                        
+* visualisation du maillage avec qualificateurs                         
+                                                                        
+TRAC QUAL S1;                                                           
+                                                                        
+************************************************                        
+* modele et materiau                                                    
+************************************************                        
+                                                                        
+MOD1 = MODE S1 MECANIQUE ELASTIQUE ISOTROPE ;                           
+MAT1 = MATE MOD1 YOUN MODYOUNG NU COEFPOIS;                             
+                                                                        
+************************************************                        
+* conditions aux limites                                                
+************************************************                        
+                                                                        
+BAS1  = POINT S1 DROI P1 (P1 PLUS (EP 0.)) 1e-6;                        
+                                                                        
+CL1 = BLOQ UX (P1 ET P2) ;                                              
+CL2 = BLOQ UY BAS1 ;                                                    
+CLT = (CL1 ET CL2);                                                     
+                                                                        
+************************************************                        
+* chargement                                                            
+************************************************                        
+                                                                        
+* creation                                                              
+                                                                        
+FOR1 = FORCER FY PY P2;                                                 
+                                                                        
+* visualisation                                                         
+                                                                        
+*VEC1 = VECT FOR1 2.E-4 FX FY ROUG;                                     
+*TRAC VEC1 S1 ;                                                         
+                                                                        
+************************************************                        
+* matrice de rigidite                                                   
+************************************************                        
+                                                                        
+RIG1 = RIGI MOD1 MAT1;                                                  
+RIG1 = RIG1 ET CLT;                                                     
+                                                                        
+************************************************                        
+* resolution                                                            
+************************************************                        
+                                                                        
+DEPL1 = RESO RIG1 FOR1;                                                 
+                                                                        
+************************************************                        
+* postraitement                                                         
+************************************************                        
+                                                                        
+* trace maille initial et deforme                                       
+                                                                        
+DEF0 = DEFO S1 DEPL1 0. BLAN;                                           
+DEF1 = DEFO S1 DEPL1 500. BLEU;                                         
+                                                                        
+                                                                        
+*********************************************************************   
+*                                                                       
+*                     CALCUL 2                                          
+*                                                                       
+*********************************************************************   
+                                                                        
+************************************************                        
+* definition des conditions generales de calcul                         
+************************************************                        
+                                                                        
+OPTI ELEM QUA8;                                                         
+                                                                        
+                                                                        
+************************************************                        
+* parametrisation                                                       
+************************************************                        
+                                                                        
+* maillage                                                              
+NH2       = 15 ;                                                        
+NEP2      = 2  ;                                                        
+                                                                        
+************************************************                        
+* geometrie et maillage                                                 
+************************************************                        
+                                                                        
+L2 = CERC NH2 P1 P3 P2 ;                                                
+                                                                        
+* surfaces                                                              
+                                                                        
+S2   = L2 TRANS NEP2 (EP 0.) ;                                          
+                                                                        
+* visualisation du maillage avec qualificateurs                         
+                                                                        
+TRAC QUAL S2;                                                           
+                                                                        
+************************************************                        
+* modele et materiau                                                    
+************************************************                        
+                                                                        
+MOD2 = MODE S2 MECANIQUE ELASTIQUE ISOTROPE ;                           
+MAT2 = MATE MOD2 YOUN MODYOUNG NU COEFPOIS;                             
+                                                                        
+************************************************                        
+* conditions aux limites                                                
+************************************************                        
+                                                                        
+BAS2  = POINT S2 DROI P1 (P1 PLUS (EP 0.)) 1e-6;                        
+                                                                        
+CL12 = BLOQ UX (P1 ET P2) ;                                             
+CL22 = BLOQ UY BAS2 ;                                                   
+CLT2 = (CL12 ET CL22);                                                  
+                                                                        
+************************************************                        
+* chargement                                                            
+************************************************                        
+                                                                        
+* creation                                                              
+                                                                        
+FOR2 = FORCER FY PY P2;                                                 
+                                                                        
+                                                                        
+************************************************                        
+* matrice de rigidite                                                   
+************************************************                        
+                                                                        
+RIG2 = RIGI MOD2 MAT2;                                                  
+RIG2 = RIG2 ET CLT2;                                                    
+                                                                        
+************************************************                        
+* resolution                                                            
+************************************************                        
+                                                                        
+DEPL2 = RESO RIG2 FOR2;                                                 
+                                                                        
+************************************************                        
+* postraitement                                                         
+************************************************                        
+                                                                        
+* trace maille initial et deforme                                       
+                                                                        
+DEF2 = DEFO S2 DEPL2 500. ROUG;                                         
+                                                                        
+*********************************************************************   
+*                                                                       
+*                     TRACES                                            
+*                                                                       
+*********************************************************************   
+                                                                        
+DEFT  = DEF0 ET DEF1 ET DEF2;                                           
+trac deft;                                                              
+                                                                        
+************************************************                        
+* fin                                                                   
+************************************************                        
+                                                                        
+FIN;                                                                    

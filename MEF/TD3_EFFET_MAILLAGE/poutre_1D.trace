@@ -1,0 +1,122 @@
+*                                                                       
+* DEBUT DU FICHIER                                                      
+*                                                                       
+TITR 'POUTRE MAILLEE 1D' ;                                              
+OPTI DIME 3 ELEM  SEG2 ;                                                
+OPTI ECHO 0;                                                            
+                                                                        
+***************************************                                 
+* PARAMETRISATION, DONNEES                                              
+***************************************                                 
+                                                                        
+* DIMENSIONS                                                            
+* ----------                                                            
+                                                                        
+L        = 1.;                                                          
+B        = 0.1;                                                         
+EP       = 0.012 ;                                                      
+                                                                        
+* PARAMETRES DE MAILLAGE                                                
+* ----------------------                                                
+                                                                        
+NL       = 100;                                                         
+                                                                        
+* ELASTICITE                                                            
+* ----------                                                            
+                                                                        
+MODYOUNG = 2.E11;                                                       
+COEFPOIS = 0.;                                                          
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+PY       = -100000.;                                                    
+                                                                        
+***************************************                                 
+* GEOMETRIE ET MAILLAGE                                                 
+***************************************                                 
+                                                                        
+* POINTS                                                                
+* ------                                                                
+                                                                        
+P1       = 0. 0. 0.;                                                    
+P2       = L  0. 0.;                                                    
+                                                                        
+* LIGNES                                                                
+* ------                                                                
+                                                                        
+POUTRE1  = P1 DROI NL P2 ;                                              
+                                                                        
+***************************************                                 
+* MODELE ET MATERIAU                                                    
+***************************************                                 
+                                                                        
+MOD1     = MODE POUTRE1 MECANIQUE ELASTIQUE ISOTROPE POUT ;             
+                                                                        
+MYSECT   = EP*B;                                                        
+MYINRY   = (B*(EP**3))/12.;                                             
+MYINRZ   = (EP*(B**3))/12.;                                             
+                                                                        
+MAT1     = MATE MOD1 YOUN MODYOUNG NU COEFPOIS ;                        
+CARA1    = CARA MOD1 SECT MYSECT INRY MYINRY INRZ MYINRZ TORS 1.;       
+MAT1     = MAT1 ET CARA1;                                               
+                                                                        
+***************************************                                 
+* CONDITIONS AUX LIMITES ET CHARGEMENT                                  
+***************************************                                 
+                                                                        
+* CL                                                                    
+* --                                                                    
+                                                                        
+CL1 = BLOQ DEPL ROTA P1 ;                                               
+                                                                        
+* CHARGEMENT                                                            
+* ----------                                                            
+                                                                        
+FOR1 = FORCER FY PY P2;                                                 
+                                                                        
+* MATRICE DE RIGIDITE                                                   
+* -------------------                                                   
+                                                                        
+RIG1 = RIGI MOD1 MAT1;                                                  
+RIG1 = RIG1 ET CL1;                                                     
+                                                                        
+***************************************                                 
+* RESOLUTION                                                            
+***************************************                                 
+                                                                        
+DEPL1 = RESO RIG1 FOR1;                                                 
+                                                                        
+***************************************                                 
+* POSTRAITEMENT                                                         
+***************************************                                 
+                                                                        
+* NUMERIQUE / THEORIQUE                                                 
+* ---------------------                                                 
+                                                                        
+DY      = EXTR DEPL1 UY P2 ;                                            
+DYABS   = ABS DY ;                                                      
+                                                                        
+INERTIE = (EP*(B**3))/12.;                                              
+DYTHEO  = ABS ((PY*(L**3))/(3*MODYOUNG*INERTIE));                       
+                                                                        
+MESS 'fleche maximale en metre :  ' DYABS;                              
+MESS 'fleche theorique en metre : ' DYTHEO;                             
+MESS ' ';                                                               
+MESS '-------------------------------------';                           
+MESS '    ->  NUM/THEO =' (DYABS/DYTHEO);                               
+MESS '-------------------------------------';                           
+                                                                        
+* VISUALISATION                                                         
+* -------------                                                         
+                                                                        
+OEIL1=0. 0. 1000.  ;                                                    
+DEF0 = DEFO POUTRE1 DEPL1 0. BLAN ;                                     
+DEF1 = DEFO POUTRE1 DEPL1 ROUG ;                                        
+TRAC OEIL1 (DEF0 ET DEF1) ;                                             
+                                                                        
+****************************************                                
+* FIN DU FICHIER                                                        
+****************************************                                
+                                                                        
+FIN ;                                                                   
